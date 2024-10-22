@@ -1,7 +1,7 @@
 <div align="center">
   
 <div align="center">
-    <img src="https://via.placeholder.com/800x200.png?text=Mello+Motion+Banner" alt="Mello Motion Banner">
+  ![alt text](image.png)
 </div>
 
 # Mello Motion 🎵
@@ -99,9 +99,7 @@ yarn dev
 
 <div align="center">
 
-
-<img src="https://via.placeholder.com/800x400.png?text=App+Screenshots" alt="App Screenshots">
-
+![alt text](image-1.png)
 
 </div>
 
