@@ -1,0 +1,33 @@
+.wheelContainer {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 150px; /* Half of the original width */
+    height: 300px;
+    overflow: hidden; /* Hide the other half of the wheel */
+    perspective: 1000px; /* Adds 3D depth */
+}
+
+.wheel {
+    position: relative;
+    width: 300px; /* Original width */
+    height: 100%;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 1s ease-in-out; /* Smooth rotation */
+}
+
+.wheelItem {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center -150px; /* Adjust the radius */
+    text-align: center;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #fff;
+}
