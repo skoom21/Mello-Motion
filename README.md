@@ -1,36 +1,159 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  
+<div align="center">
+    <img src="https://via.placeholder.com/800x200.png?text=Mello+Motion+Banner" alt="Mello Motion Banner">
+</div>
 
-## Getting Started
+# Mello Motion 🎵
 
-First, run the development server:
+> Transform your mood into music. A next-generation music curation platform that understands your emotions.
 
+[![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Spotify](https://img.shields.io/badge/Spotify-1ED760?style=for-the-badge&logo=spotify&logoColor=white)](https://developer.spotify.com/documentation/web-api/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+</div>
+
+## ✨ Overview
+
+Mello Motion is a revolutionary music curation platform that bridges the gap between emotions and music. Using advanced emotional profiling algorithms and seamless Spotify integration, we deliver personalized music recommendations that match your current mood and emotional state.
+
+## 🎯 Key Features
+
+### 🎭 Emotional Intelligence
+- Real-time mood detection and analysis
+- Personalized emotional profiling
+- Historical mood tracking and patterns
+
+### 🎵 Music Curation
+- AI-powered song recommendations
+- Mood-based playlist generation
+- Spotify integration with your library
+
+### 👤 User Experience
+- Customizable user profiles
+- Emotional journey timeline
+- Favorite tracks and moods tracking
+- Social sharing capabilities
+
+### 🎨 Interactive Design
+- Stunning 3D visualizations
+- Fluid animations and transitions
+- Responsive and intuitive interface
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- npm or yarn
+- Spotify Developer Account
+- Modern web browser
+
+### Installation
+
+1. Clone the repository
+```bash
+git clone https://github.com/yourusername/mello-motion.git
+cd mello-motion
+```
+
+2. Install dependencies
+```bash
+npm install
+# or
+yarn install
+```
+
+3. Set up environment variables
+```bash
+cp .env.example .env.local
+```
+Fill in your Spotify API credentials and other required variables.
+
+4. Run the development server
 ```bash
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+5. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 🛠️ Technology Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Frontend Framework**: Next.js
+- **Language**: TypeScript
+- **Styling**: 
+  - Tailwind CSS
+  - Framer Motion
+  - Three.js
+- **Authentication**: NextAuth.js
+- **API Integration**: Spotify Web API
+- **State Management**: Zustand
+- **Database**: Prisma with PostgreSQL
+- **Deployment**: Vercel
 
-## Learn More
+## 📱 Screenshots
 
-To learn more about Next.js, take a look at the following resources:
+<div align="center">
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<img src="https://via.placeholder.com/800x400.png?text=App+Screenshots" alt="App Screenshots">
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+</div>
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📖 Documentation
+
+For detailed documentation, please visit our [Wiki](https://github.com/yourusername/mello-motion/wiki).
+
+- [API Reference](docs/api.md)
+- [Configuration Guide](docs/configuration.md)
+- [Contributing Guidelines](CONTRIBUTING.md)
+
+## 🔐 Environment Variables
+
+```env
+SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+NEXTAUTH_SECRET=your_nextauth_secret
+DATABASE_URL=your_database_url
+```
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Spotify Web API
+- Next.js Team
+- All our contributors and supporters
+
+## 📞 Support
+
+- Report bugs through our [Issue Tracker](https://github.com/yourusername/mello-motion/issues)
+- Join our [Discord Community](https://discord.gg/mello-motion)
+- Email us at support@mello-motion.com
+
+---
+
+<div align="center">
+
+Made with ❤️ by the Mello Motion Team
+
+[Website](https://mello-motion.com) • [Documentation](https://docs.mello-motion.com) • [Blog](https://blog.mello-motion.com)
+
+</div>
