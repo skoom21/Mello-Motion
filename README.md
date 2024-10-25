@@ -6,8 +6,6 @@
 
 </div>
 
-# Mello Motion 🎵
-
 > Transform your mood into music. A next-generation music curation platform that understands your emotions.
 
 [![Next.js](https://img.shields.io/badge/Next.js-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
