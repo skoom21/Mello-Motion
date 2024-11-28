@@ -1,361 +1,515 @@
-"use client"
+import { useState } from "react";
+import { createOrUpdateEmotionalProfile } from "@/utils/emotional_profile";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import Image from "next/image";
+import Ripple from "./ui/ripple";
+const moodOptions = [
+  { label: "Happy", emoji: "😊" },
+  { label: "Calm", emoji: "😌" },
+  { label: "Neutral", emoji: "😐" },
+  { label: "Sad", emoji: "😢" },
+  { label: "Anxious", emoji: "😬" },
+];
 
-import { useState, useEffect } from "react"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { cn } from "@/lib/utils"
-import { motion, AnimatePresence } from "framer-motion"
+const energyLevels = [
+  { label: "High", emoji: "⚡" },
+  { label: "Medium", emoji: "🔋" },
+  { label: "Low", emoji: "💤" },
+];
 
-const emotions = [
-  "Angry", "Anxious", "Ashamed", "Disappointed", "Discouraged", "Disgusted",
-  "Embarrassed", "Frustrated", "Guilty", "Helpless", "Hopeless", "Irritated",
-  "Jealous", "Lonely", "Sad", "Scared", "Stressed", "Surprised", "Worried"
-]
+const musicGoals = [
+  "Lift my mood",
+  "Help me relax",
+  "Increase focus",
+  "Match my feelings",
+  "Energize me",
+];
 
-const impactCategories = [
-  "Community", "Current Events", "Dating", "Education", "Family", "Fitness",
-  "Friends", "Health", "Hobbies", "Identity", "Money", "Partner", "Self-care",
-  "Sexuality", "Tasks", "Travel", "Work"
-]
+const moodAlignment = ["Aligns with my mood", "Changes my mood"];
 
-export default function MoodLoggerModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const [step, setStep] = useState(1)
-  const [mood, setMood] = useState(50)
-  const [selectedEmotions, setSelectedEmotions] = useState<string[]>([])
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([])
+const genres = [
+  "Pop",
+  "Rock",
+  "Hip-hop/Rap",
+  "Jazz",
+  "Lo-fi/Chill",
+  "Classical",
+  "Indie/Alternative",
+];
 
-  const handleMoodChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMood(Number(event.target.value))
-  }
+const locations = [
+  { label: "Home", emoji: "🏠" },
+  { label: "Work/School", emoji: "💼" },
+  { label: "Outdoors", emoji: "🌲" },
+  { label: "Commuting", emoji: "🚗" },
+];
 
-  const handleEmotionToggle = (emotion: string) => {
-    setSelectedEmotions(prev => 
-      prev.includes(emotion) ? prev.filter(e => e !== emotion) : [...prev, emotion]
-    )
-  }
+const musicEnergy = ["Upbeat (high energy)", "Calm (low energy)"];
 
-  const handleCategoryToggle = (category: string) => {
-    setSelectedCategories(prev => 
-      prev.includes(category) ? prev.filter(c => c !== category) : [...prev, category]
-    )
-  }
+export default function MoodLoggerModal({
+  isOpen,
+  onClose,
+  Session,
+}: {
+  isOpen: boolean;
+  onClose: () => void;
+  Session: any;
+}) {
+  const [step, setStep] = useState(1);
+  const [currentMood, setCurrentMood] = useState("");
+  const [energyLevel, setEnergyLevel] = useState("");
+  const [selectedGoal, setSelectedGoal] = useState("");
+  const [moodChoice, setMoodChoice] = useState("");
+  const [selectedGenres, setSelectedGenres] = useState<string[]>([]);
+  const [musicType, setMusicType] = useState("");
+  const [location, setLocation] = useState("");
+
+  const username = Session?.user?.name;
+
+  const handleGenreToggle = (genre: string) => {
+    setSelectedGenres((prev) => {
+      if (prev.includes(genre)) {
+        return prev.filter((g) => g !== genre);
+      }
+      if (prev.length < 3) {
+        return [...prev, genre];
+      }
+      return prev;
+    });
+  };
 
   const handleNext = () => {
-    if (step < 4) setStep(step + 1)
-  }
+    if (step < 5) setStep(step + 1);
+  };
 
   const handleBack = () => {
-    if (step > 1) setStep(step - 1)
+    if (step > 1) setStep(step - 1);
+  };
+
+  function calculateMoodScore(data: any) {
+    const { mood, energy, goal, alignment, location, musicEnergy } = data;
+
+    // Define scoring weights
+    const moodWeights: { [key: string]: number } = {
+      Happy: 8,
+      Calm: 6,
+      Neutral: 5,
+      Sad: 2,
+      Anxious: 3,
+    };
+
+    const energyWeights: { [key: string]: number } = {
+      High: 2,
+      Medium: 1,
+      Low: -1,
+    };
+
+    const goalWeights: { [key: string]: number } = {
+      "Lift my mood": 2,
+      "Help me relax": 1,
+      "Increase focus": 1,
+      "Match my feelings": 0,
+      "Energize me": 2,
+    };
+
+    const alignmentWeights: { [key: string]: number } = {
+      "Aligns with my mood": 0,
+      "Changes my mood": 1,
+    };
+
+    const locationWeights: { [key: string]: number } = {
+      Home: 0,
+      "Work/School": -1,
+      Outdoors: 1,
+      Commuting: -1,
+    };
+
+    const musicEnergyWeights: { [key: string]: number } = {
+      Upbeat: 2,
+      Calm: -1,
+    };
+
+    // Calculate the mood score based on weights
+    let moodScore = moodWeights[mood] || 5; // Base mood score
+    moodScore += energyWeights[energy] || 0;
+    moodScore += goalWeights[goal] || 0;
+    moodScore += alignmentWeights[alignment] || 0;
+    moodScore += locationWeights[location] || 0;
+    moodScore += musicEnergyWeights[musicEnergy] || 0;
+
+    // Clamp score to a range of 1-10
+    return Math.max(1, Math.min(10, moodScore));
   }
 
-  const handleDone = () => {
-    console.log("Mood logged:", { mood, selectedEmotions, selectedCategories })
-    onClose()
+  function getEmotionalColor(data: any) {
+    const { mood, energy, musicEnergy } = data;
+
+    // Base colors for each parameter
+    const moodColors: { [key: string]: string } = {
+      Happy: "#FFD700", // Gold
+      Calm: "#ADD8E6", // Light Blue
+      Neutral: "#808080", // Gray
+      Sad: "#0000FF", // Blue
+      Anxious: "#551A8B", // Dark Purple
+    };
+
+    const energyColors: { [key: string]: string } = {
+      High: "#FF4500", // Red
+      Medium: "#FFA500", // Orange
+      Low: "#FFFFE0", // Light Yellow
+    };
+
+    const musicEnergyColors: { [key: string]: string } = {
+      Upbeat: "#32CD32", // Green
+      Calm: "#800080", // Purple
+    };
+
+    // Function to blend colors based on the hex color codes
+    function blendColors(
+      color1: string,
+      color2: string,
+      ratio: number
+    ): string {
+      const hex = (color: string) => parseInt(color.slice(1), 16);
+      const r = (color: number) => (color >> 16) & 0xff;
+      const g = (color: number) => (color >> 8) & 0xff;
+      const b = (color: number) => color & 0xff;
+
+      const c1 = hex(color1);
+      const c2 = hex(color2);
+
+      const rBlend = Math.round(r(c1) * (1 - ratio) + r(c2) * ratio);
+      const gBlend = Math.round(g(c1) * (1 - ratio) + g(c2) * ratio);
+      const bBlend = Math.round(b(c1) * (1 - ratio) + b(c2) * ratio);
+
+      return `#${((1 << 24) + (rBlend << 16) + (gBlend << 8) + bBlend)
+        .toString(16)
+        .slice(1)
+        .toUpperCase()}`;
+    }
+
+    // Priority blend: mood > energy > musicEnergy
+    const moodColor = moodColors[mood] || "#808080"; // Default to gray
+    const energyColor = energyColors[energy] || "#FFFFFF";
+    const musicEnergyColor = musicEnergyColors[musicEnergy] || "#FFFFFF";
+
+    // Blend mood with energy, then blend with music energy for final color
+    const blendedMoodEnergy = blendColors(moodColor, energyColor, 0.6);
+    const finalColor = blendColors(blendedMoodEnergy, musicEnergyColor, 0.3);
+
+    return finalColor;
   }
 
-  const getMoodText = (value: number) => {
-    if (value < 25) return "Very Unpleasant"
-    if (value < 50) return "Slightly Unpleasant"
-    if (value < 75) return "Slightly Pleasant"
-    return "Very Pleasant"
+  const handleDone = async () => {
+    try {
+      const preferences = {
+        mood: currentMood,
+        energy: energyLevel,
+        goal: selectedGoal,
+        moodAlignment: moodChoice,
+        genres: selectedGenres,
+        musicEnergy: musicType,
+        location,
+      };
+
+      const emotionalData = {
+        preferences,
+        mentalWellness: {
+          dailyEntries: [
+            {
+              date: new Date().toISOString().split("T")[0],
+              moodScore: calculateMoodScore(preferences),
+              mood: currentMood,
+              energy: energyLevel,
+              color: getEmotionalColor(preferences),
+            },
+          ],
+        },
+      };
+
+      const result = await createOrUpdateEmotionalProfile(
+        Session.id,
+        emotionalData
+      );
+      console.log("Emotional profile result:", result);
+      onClose();
+    } catch (error) {
+      console.error("Error creating or updating emotional profile:", error);
+    }
+  };
+
+  const [showAlert, setShowAlert] = useState(false);
+
+  function handleShowAlert() {
+    setShowAlert(true);
+    setTimeout(() => setShowAlert(false), 3000); // Hide after 3 seconds
   }
+
+  // Add this right before the return statement
+  const alertComponent = showAlert && (
+    <Alert className="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 bg-red-500 text-white w-[90%] sm:w-[400px] md:w-[500px]">
+      <AlertTitle className="text-sm sm:text-base">Heads up!</AlertTitle>
+      <AlertDescription className="text-xs sm:text-sm">
+        Please complete the current step before proceeding.
+      </AlertDescription>
+    </Alert>
+  );
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[600px] bg-[#2A1541] text-white">
-        <DialogHeader>
-          <DialogTitle className="text-center text-xl font-semibold text-purple-300">
-            {step === 1 && "Welcome to Mello-Motion"}
-            {step === 2 && "Choose how you're feeling right now"}
-            {step === 3 && "What best describes this feeling?"}
-            {step === 4 && "What's having the biggest impact on you?"}
-          </DialogTitle>
-        </DialogHeader>
-        <AnimatePresence mode="wait">
+      <DialogHeader>
+      {alertComponent}
+        <DialogTitle className="text-center text-xl font-semibold text-purple-300">
+        {step === 2 && "Mood and Energy"}
+        {step === 3 && "Music Goals"}
+        {step === 4 && "Music Style Preferences"}
+        {step === 5 && "Listening Context"}
+        </DialogTitle>
+      </DialogHeader>
+      <AnimatePresence mode="wait">
+        <motion.div
+        key={step}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: -20 }}
+        transition={{ duration: 0.2 }}
+        className="mt-4 space-y-6 flex flex-col items-center"
+        >
+        {step === 1 && (
+          <div className="space-y-6 text-center">
           <motion.div
-            key={step}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.2 }}
-            className="mt-4"
+            className="relative mb-6 flex justify-center"
+            whileHover={{ scale: 1.05 }}
+            transition={{ type: "spring", stiffness: 400, damping: 10 }}
           >
-            {step === 1 && (
-              <div className="space-y-6 text-center">
-                <div className="relative w-40 h-40 mx-auto">
-                  <img src="/mello-motion-logo.png" alt="Mello-Motion Logo" className="w-full h-full object-contain" />
-                </div>
-                <h2 className="text-2xl font-bold text-purple-300">Welcome to Mello-Motion</h2>
-                <p className="text-lg text-purple-200">
-                  Your one-stop for mental well-being and the melody to your emotions.
-                </p>
-                <p className="text-lg text-purple-200">
-                  Explore music in a new way, catered towards you.
-                </p>
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="mt-4"
-                >
-                </motion.div>
-              </div>
-            )}
-            {step === 2 && (
-              <div className="space-y-6">
-                <div className="relative w-80 h-80 mx-auto">
-                  <AnimatedMoodFlower mood={mood} />
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  value={mood}
-                  onChange={handleMoodChange}
-                  className="w-full appearance-none bg-purple-300 h-3 rounded-full"
-                  style={{
-                    background: `linear-gradient(to right, #9333EA 0%, #9333EA ${mood}%, #D8B4FE ${mood}%, #D8B4FE 100%)`,
-                  }}
-                />
-                <div className="flex justify-between text-sm text-purple-300">
-                  <span>VERY UNPLEASANT</span>
-                  <span>VERY PLEASANT</span>
-                </div>
-              </div>
-            )}
-            {step === 3 && (
-              <div className="grid grid-cols-3 gap-2">
-                {emotions.map((emotion) => (
-                  <motion.div
-                    key={emotion}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white transition-colors duration-200",
-                        selectedEmotions.includes(emotion) && "bg-purple-600 text-white"
-                      )}
-                      onClick={() => handleEmotionToggle(emotion)}
-                    >
-                      {emotion}
-                    </Button>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-            {step === 4 && (
-              <div className="grid grid-cols-3 gap-2">
-                {impactCategories.map((category) => (
-                  <motion.div
-                    key={category}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white transition-colors duration-200",
-                        selectedCategories.includes(category) && "bg-purple-600 text-white"
-                      )}
-                      onClick={() => handleCategoryToggle(category)}
-                    >
-                      {category}
-                    </Button>
-                  </motion.div>
-                ))}
-              </div>
-            )}
+            {/* Ripple Effect behind the Image */}
+            <Ripple
+            className="absolute inset-0"
+            mainCircleSize={10}
+            numCircles={6}
+            />
+
+            {/* Centered Image */}
+            <Image
+            src="/mello-motion-logo.png"
+            alt="Mello Motion Logo"
+            width={300}
+            height={300}
+            className="bg-transparent relative z-10"
+            />
           </motion.div>
-        </AnimatePresence>
-        <div className="flex justify-between mt-4">
-          {step > 1 && (
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <h3 className="text-3xl font-extrabold text-purple-300 mb-4">
+            Welcome!
+          </h3>
+          <p className="text-gray-400 mb-6">
+            We're excited to have you here! Let's begin by understanding
+            your current mood.
+          </p>
+          </div>
+        )}
+        {step === 2 && (
+          <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            How are you feeling right now?
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {moodOptions.map(({ label, emoji }) => (
               <Button
-                variant="outline"
-                onClick={handleBack}
-                className="bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white transition-colors duration-200"
+              key={label}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                currentMood === label && "bg-purple-600 text-white"
+              )}
+              onClick={() => setCurrentMood(label)}
               >
-                Back
+              {emoji} {label}
               </Button>
-            </motion.div>
-          )}
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="ml-auto">
-            {step < 3 ? (
+            ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            How is your energy level?
+            </h3>
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+            {energyLevels.map(({ label, emoji }) => (
               <Button
-                onClick={handleNext}
-                className="bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+              key={label}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                energyLevel === label && "bg-purple-600 text-white"
+              )}
+              onClick={() => setEnergyLevel(label)}
               >
-                Next
+              {emoji} {label}
               </Button>
-            ) : (
+            ))}
+            </div>
+          </div>
+          </div>
+        )}
+
+        {step === 3 && (
+          <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            What do you want the music to do for you?
+            </h3>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {musicGoals.map((goal) => (
               <Button
-                onClick={handleDone}
-                className="bg-purple-600 text-white hover:bg-purple-700 transition-colors duration-200"
+              key={goal}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                selectedGoal === goal && "bg-purple-600 text-white"
+              )}
+              onClick={() => setSelectedGoal(goal)}
               >
-                Done
+              {goal}
               </Button>
-            )}
-          </motion.div>
-        </div>
+            ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            Are you looking for music that...
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {moodAlignment.map((choice) => (
+              <Button
+              key={choice}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                moodChoice === choice && "bg-purple-600 text-white"
+              )}
+              onClick={() => setMoodChoice(choice)}
+              >
+              {choice}
+              </Button>
+            ))}
+            </div>
+          </div>
+          </div>
+        )}
+
+        {step === 4 && (
+          <div className="space-y-6">
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            Pick a few genres you're in the mood for (up to 3)
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {genres.map((genre) => (
+              <Button
+              key={genre}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                selectedGenres.includes(genre) &&
+                "bg-purple-600 text-white"
+              )}
+              onClick={() => handleGenreToggle(genre)}
+              >
+              {genre}
+              </Button>
+            ))}
+            </div>
+          </div>
+          <div className="space-y-2">
+            <h3 className="text-lg text-purple-300">
+            Do you want upbeat or calm music?
+            </h3>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {musicEnergy.map((type) => (
+              <Button
+              key={type}
+              variant="outline"
+              className={cn(
+                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                musicType === type && "bg-purple-600 text-white"
+              )}
+              onClick={() => setMusicType(type)}
+              >
+              {type}
+              </Button>
+            ))}
+            </div>
+          </div>
+          </div>
+        )}
+
+        {step === 5 && (
+          <div className="space-y-2">
+          <h3 className="text-lg text-purple-300">
+            Where are you right now?
+          </h3>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {locations.map(({ label, emoji }) => (
+            <Button
+              key={label}
+              variant="outline"
+              className={cn(
+              "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+              location === label && "bg-purple-600 text-white"
+              )}
+              onClick={() => setLocation(label)}
+            >
+              {emoji} {label}
+            </Button>
+            ))}
+          </div>
+          </div>
+        )}
+        </motion.div>
+      </AnimatePresence>
+
+      <div className="flex justify-between mt-6">
+        {step > 1 && (
+        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          <Button
+          variant="outline"
+          onClick={handleBack}
+          className="bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white"
+          >
+          Back
+          </Button>
+        </motion.div>
+        )}
+        <motion.div
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.95 }}
+        className="ml-auto"
+        >
+        <Button
+          onClick={() => {
+          if ((step === 2 && currentMood && energyLevel) || step === 1) handleNext();
+          else if (step === 3 && selectedGoal && moodChoice) handleNext();
+          else if (step === 4 && selectedGenres.length > 0 && musicType) handleNext();
+          else if (step === 5 && location) handleDone();
+          else handleShowAlert();
+          }}
+          className="bg-purple-600 text-white hover:bg-purple-700"
+        >
+          {step < 4 ? "Next" : "Done"}
+        </Button>
+        </motion.div>
+      </div>
       </DialogContent>
     </Dialog>
-  )
-}
-
-interface AnimatedMoodFlowerProps {
-    mood: number
-}
-
-const AnimatedMoodFlower: React.FC<AnimatedMoodFlowerProps> = ({ mood }) => {
-    const [rotation, setRotation] = useState(0)
-
-    // Determine stage based on mood
-    const getStage = (mood: number) => {
-        if (mood < 25) return 1
-        if (mood < 50) return 2
-        if (mood < 75) return 3
-        return 4
-    }
-
-    const [stage, setStage] = useState(getStage(mood))
-
-    // Update rotation every 50ms
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setRotation((prev) => (prev + 1) % 360)
-        }, 50)
-        return () => clearInterval(interval)
-    }, [])
-
-    // Update stage when mood changes
-    useEffect(() => {
-        const newStage = getStage(mood)
-        if (newStage !== stage) {
-            setStage(newStage)
-        }
-    }, [mood, stage])
-
-    // Get color based on mood intensity
-    const getColor = (intensity: number) => {
-        const hue = 270 + mood * 0.6 // 270 (purple) to 330 (pink)
-        return `hsla(${hue}, 100%, ${intensity}%, 0.7)`
-    }
-
-    // Render flower stages based on the current stage
-    const renderStage = (stage: number) => {
-        const petalPath = (scale: number) => `M 100 100 C 100 ${60 * scale}, ${130 * scale} ${40 * scale}, 100 ${20 * scale} C ${70 * scale} ${40 * scale}, 100 ${60 * scale}, 100 100 Z`
-
-        switch (stage) {
-            case 1:
-                return (
-                    <circle cx="100" cy="100" r="40" fill="url(#moodGradient)">
-                        <animateTransform
-                            attributeName="transform"
-                            type="scale"
-                            values="1;1.1;1"
-                            dur="3s"
-                            repeatCount="indefinite"
-                            keyTimes="0;0.5;1"
-                            calcMode="spline"
-                            keySplines="0.25 0.1 0.25 1; 0.25 0.1 0.25 1"
-                        />
-                    </circle>
-                )
-            case 2:
-                return (
-                    <g>
-                        {[...Array(4)].map((_, i) => (
-                            <g key={i} transform={`rotate(${rotation + i * 90}, 100, 100)`}>
-                                <path
-                                    d={petalPath(1)}
-                                    fill="url(#moodGradient)"
-                                >
-                                    <animateTransform
-                                        attributeName="transform"
-                                        type="scale"
-                                        values="1;1.15;1"
-                                        dur="3s"
-                                        repeatCount="indefinite"
-                                        keyTimes="0;0.5;1"
-                                        calcMode="spline"
-                                        keySplines="0.25 0.1 0.25 1; 0.25 0.1 0.25 1"
-                                    />
-                                </path>
-                            </g>
-                        ))}
-                    </g>
-                )
-            case 3:
-                return (
-                    <g>
-                        {[...Array(6)].map((_, i) => (
-                            <g key={i} transform={`rotate(${rotation + i * 60}, 100, 100)`}>
-                                <path
-                                    d={petalPath(1.3)}
-                                    fill="url(#moodGradient)"
-                                >
-                                    <animateTransform
-                                        attributeName="transform"
-                                        type="scale"
-                                        values="1;1.25;1"
-                                        dur="3s"
-                                        repeatCount="indefinite"
-                                        keyTimes="0;0.5;1"
-                                        calcMode="spline"
-                                        keySplines="0.25 0.1 0.25 1; 0.25 0.1 0.25 1"
-                                    />
-                                </path>
-                            </g>
-                        ))}
-                    </g>
-                )
-            case 4:
-                return (
-                    <g>
-                        {[...Array(8)].map((_, i) => (
-                            <g key={i} transform={`rotate(${rotation + i * 45}, 100, 100)`}>
-                                <path
-                                    d={petalPath(1.5)}
-                                    fill="url(#moodGradient)"
-                                >
-                                    <animateTransform
-                                        attributeName="transform"
-                                        type="scale"
-                                        values="1;1.2;1"
-                                        dur="2s"
-                                        repeatCount="indefinite"
-                                    />
-                                </path>
-                            </g>
-                        ))}
-                    </g>
-                )
-            default:
-                return null
-        }
-    }
-
-    return (
-        <svg viewBox="0 0 200 200" className="w-full h-full">
-            <defs>
-                <radialGradient id="moodGradient" cx="50%" cy="50%" r="50%" fx="50%" fy="50%">
-                    <stop offset="0%" stopColor={getColor(50)} />
-                    <stop offset="100%" stopColor={getColor(90)} />
-                </radialGradient>
-            </defs>
-
-            <AnimatePresence mode='wait'>
-                <motion.g
-                    key={stage}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    transition={{ duration: 0.5 }}
-                >
-                    {renderStage(stage)}
-                </motion.g>
-            </AnimatePresence>
-        </svg>
-    )
+  );
 }

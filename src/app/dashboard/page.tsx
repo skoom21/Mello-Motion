@@ -9,12 +9,13 @@ import { MenuItem } from "@/components/dashboard/MenuItem";
 import { SettingsPopover } from "@/components/dashboard/SettingsPopover";
 import { getSession, useSession } from "next-auth/react";
 import { signOut } from "next-auth/react";
-import router from "next/router";
 import { useRouter } from "next/navigation";
-import {Widget}  from "@/components/widget";
+import Widget  from "@/components/widget";
 import ProfileSection from "@/components/profile-section";
-import {createUserInDb} from '@/utils/create'; // The function from above
-import MoodLoggerModal  from "@/components/Mood-Modal";
+import { createUserInDb } from "@/utils/create"; // The function from above
+import MoodLoggerModal from "@/components/Mood-Modal";
+import BlurIn from "@/components/ui/blur-in";
+import SparklesText from "@/components/ui/sparkles-text";
 
 const menuItems = [
   { id: "Home", title: "Home", icon: "Home" as const },
@@ -50,12 +51,13 @@ export default function Dashboard() {
         // When the user has successfully logged in with Spotify
         const spotifyUser = session; // This will be the user object returned by NextAuth
         if (spotifyUser) {
-          const user = createUserInDb(spotifyUser);
-            if (await user == "newuser") {
+          console.log(spotifyUser);
+          const user = await createUserInDb(spotifyUser);
+          if ((user) == "newuser") {
             // Display the modal component
             // Assuming you have a modal component to show
             setShowModal(true);
-            }
+          }
         }
       }
     };
@@ -63,10 +65,16 @@ export default function Dashboard() {
     fetchData();
   }, [status]);
 
+  if (showModal) {
+    return (
+      <MoodLoggerModal isOpen={showModal} onClose={() => setShowModal(false)} Session={session} />
+    );
+  }
+
   const renderContent = () => {
     switch (activeItem) {
       case "Home":
-        return <Widget/>;
+        return <Widget />;
       case "moodMixer":
         return <div>Mood Mixer Content</div>;
       case "playlists":
@@ -75,14 +83,14 @@ export default function Dashboard() {
         return <div>Discover Content</div>;
       case "create":
         return <div>Create Content</div>;
+      case "profile":
+        return <ProfileSection />;
       default:
-        return <ProfileSection></ProfileSection>;
     }
   };
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
   const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
-
 
   const handleColorChange = (e: {
     target: { value: SetStateAction<string> };
@@ -95,8 +103,6 @@ export default function Dashboard() {
   };
 
   return (
-
-    
     <div
       className={`relative min-h-screen overflow-hidden transition-colors duration-300  ${
         theme === "dark"
@@ -104,9 +110,8 @@ export default function Dashboard() {
           : "bg-purple-950 text-gray-900"
       }`}
     >
-      <MoodLoggerModal isOpen={showModal} onClose={() => setShowModal(false)} />
+      <MoodLoggerModal isOpen={showModal} onClose={() => setShowModal(false) } Session={session} />
       <div className="relative z-10 flex h-screen ">
-
         {/* Sidebar */}
         <motion.aside
           className={`${
@@ -118,7 +123,7 @@ export default function Dashboard() {
             transition: { duration: 0.3, ease: "easeInOut" },
           }}
         >
-            <div className="flex items-center mb-4">
+          <div className="flex items-center mb-4">
             <Image
               src="/mello-motion-logo.png"
               alt="Mello Motion Logo"
@@ -128,16 +133,16 @@ export default function Dashboard() {
             />
             {isMenuOpen && (
               <motion.h1
-              className="text-2xl font-bold"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -20 }}
-              transition={{ duration: 0.5, ease: "easeInOut" }}
+                className="text-2xl font-bold"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.5, ease: "easeInOut" }}
               >
-              Mello-Motion
+                 <SparklesText text="Mello Motion" />
               </motion.h1>
             )}
-            </div>
+          </div>
 
           <nav className="flex-1 px-4">
             {menuItems.map((item) => (
@@ -153,38 +158,39 @@ export default function Dashboard() {
             ))}
           </nav>
 
-            <div className="mt-auto px-4 pb-6">
+          <div className="mt-auto px-4 pb-6">
             <motion.div
               className="flex items-center mb-8"
               initial={false}
               animate={{
-              opacity: isMenuOpen ? 1 : 1,
-              x: isMenuOpen ? 0 : 0,
-              transition: { duration: 0.3, ease: "easeInOut" },
+                opacity: isMenuOpen ? 1 : 1,
+                x: isMenuOpen ? 0 : 0,
+                transition: { duration: 0.3, ease: "easeInOut" },
               }}
             >
               {session?.user?.image && (
-              <Image
-              src={session.user.image}
-              alt="Profile Picture"
-              width={40}
-              height={40}
-              className="rounded-full mr-4"
-              />
+                <Image
+                  src={session.user.image}
+                  alt="Profile Picture"
+                  width={40}
+                  height={40}
+                  className="rounded-full mr-4"
+                  onClick={() => setActiveItem("profile")} // Change to profile section
+                />
               )}
-                {isMenuOpen && (
+              {isMenuOpen && (
                 <motion.h3
-                className="text-xl font-semibold cursor-pointer"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.5, ease: "easeInOut" }}
-                whileHover={{ scale: 1.1, transition: { duration: 0.3 } }}
-                onClick={() => setActiveItem("profile")} // Change to profile section
+                  className="text-xl font-semibold cursor-pointer"
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.5, ease: "easeInOut" }}
+                  whileHover={{ scale: 1.1, transition: { duration: 0.3 } }}
+                  onClick={() => setActiveItem("profile")} // Change to profile section
                 >
-                {session?.user?.name || "User"}
+                  {session?.user?.name || "User"}
                 </motion.h3>
-                )}
+              )}
             </motion.div>
 
             <SettingsPopover
@@ -198,49 +204,59 @@ export default function Dashboard() {
             <Button
               variant="ghost"
               className="w-full justify-center lg:justify-start"
-              onClick={() => {}}
+              onClick={handleLogout}
             >
               <LogOut className="w-6 h-6" />
               <AnimatePresence>
-                {isMenuOpen && (
-                  <motion.span
-                    className="ml-4"
-                    initial={{ opacity: 0, width: 0 }}
-                    animate={{ opacity: 1, width: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.3 }}
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </motion.span>
-                )}
+              {isMenuOpen && (
+                <motion.span
+                className="ml-4"
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "auto" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.3 }}
+                >
+                Logout
+                </motion.span>
+              )}
               </AnimatePresence>
             </Button>
           </div>
         </motion.aside>
 
         {/* Main content */}
-        <main className={`flex-1 p-8 overflow-y-auto bg-gradient-to-r ${
-        theme === "dark"
-          ? "bg-gradient-to-br from-purple-900 to-black text-white"
-          : "bg-gradient-to-r from-slate-50 to text-gray-900"
-      }`} >
-          <header className="flex justify-between items-center mb-8">
-            <h2 className="text-3xl font-bold">
-              {menuItems.find((item) => item.id === activeItem)?.title}
-            </h2>
-            <Button variant="ghost" size="icon" onClick={toggleMenu}>
-              {isMenuOpen ? (
-          <ChevronLeft className="w-6 h-6" />
-              ) : (
-          <ChevronRight className="w-6 h-6" />
-              )}
-            </Button>
-          </header>
+        <main
+          className={`flex-1 p-8 overflow-y-auto bg-gradient-to-r ${
+            theme === "dark"
+              ? "bg-gradient-to-br from-purple-900 to-black text-white"
+              : "bg-gradient-to-r from-slate-50 to text-gray-900"
+          }`}
+        >
+
+            <header className="flex justify-between items-center mb-8">
+            {activeItem !== "profile" && (
+              <BlurIn
+              word={menuItems.find((item) => item.id === activeItem)?.title || "Default Title"}
+              className="text-3xl "
+              />
+            )}
+
+                <Button
+                variant="ghost"
+                size="icon"
+                onClick={toggleMenu}
+                className="z-20"
+                >
+                {isMenuOpen ? (
+                  <ChevronLeft className="w-6 h-6" />
+                ) : (
+                  <ChevronRight className="w-6 h-6" />
+                )}
+                </Button>
+            </header>
           {renderContent()}
         </main>
       </div>
     </div>
   );
 }
-

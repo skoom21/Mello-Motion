@@ -20,7 +20,7 @@ export async function initDb(): Promise<Surreal | undefined> {
         console.log("Connected to SurrealDB.");
         
         // Use a specific namespace and database
-        await db.use({ namespace: "main", database: "Mello-Motion" });
+        await db.use({ namespace: "Main", database: "Mello-Motion" });
         console.log("Using namespace 'main' and database 'Mello-Motion'.");
         
         return db;

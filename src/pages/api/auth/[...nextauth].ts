@@ -2,7 +2,6 @@
 import NextAuth from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
 import axios from 'axios';
-import { JWT } from 'next-auth/jwt';
 
 // Extend the Session type to include accessToken
 declare module 'next-auth' {
@@ -71,23 +70,33 @@ export default NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user, account }: { token: JWT; user?: any; account?: any }) {
-      // Initial sign in
+    async jwt({ token, account }) {
+      // Persist the OAuth access token and Spotify ID
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
-        token.accessTokenExpires = account.expires_at ? account.expires_at * 1000 : Date.now() + 3600 * 1000; // Handle expiry time in milliseconds
-        token.id = account.id;
+        token.expires_at = account.expires_at;
+
+        // Fetch the user's profile from Spotify
+        try {
+          const response = await axios.get('https://api.spotify.com/v1/me', {
+            headers: {
+              Authorization: `Bearer ${token.accessToken}`,
+            },
+          });
+          // Store the user ID in the token
+          token.id = response.data.id; // Store the Spotify User ID
+        } catch (error) {
+          console.error('Error fetching user data from Spotify:', error);
+        }
         return token;
       }
-
-      // Return previous token if the access token has not expired yet
-      if (typeof token.accessTokenExpires === 'number' && Date.now() < token.accessTokenExpires) {
-        return token;
-      }
-
-      // Access token has expired, try to update it
-      return refreshAccessToken(token);
+        // Return previous token if the access token has not expired yet
+        if (typeof token.accessTokenExpires === 'number' && Date.now() < token.accessTokenExpires) {
+          return token;
+        }
+        // Access token has expired, try to update it
+        return refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;

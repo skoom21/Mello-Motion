@@ -48,7 +48,6 @@ export default function LandingPage() {
 
       {/* Purple nebula effect */}
       <div className="absolute inset-0 bg-gradient-radial from-purple-900/20 to-transparent opacity-30" />
-      <VelocityScroll />
 
       <main className="relative z-10 flex flex-col items-center justify-center min-h-screen p-4">
         <motion.div

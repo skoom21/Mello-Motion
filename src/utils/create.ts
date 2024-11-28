@@ -13,7 +13,7 @@ export async function createUserInDb(spotifyUser:any) {
         signup_date: Date;
         last_login : Date;
     }
-    let db =  getDb();
+    let db = getDb();
     if (!db) {
         db = await initDb();
     }

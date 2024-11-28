@@ -4,6 +4,7 @@ import { Music } from "lucide-react"; // Adjust the import according to your ico
 import { useSession } from "next-auth/react";
 import { getRecentlyPlayedTracks } from "@/utils/getrecent";
 import { Skeleton } from "@/components/ui/skeleton"; // Import the Skeleton component
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 
 const RecentlyPlayedCard = () => {
   const { data: session, status } = useSession();
@@ -43,74 +44,74 @@ const RecentlyPlayedCard = () => {
     setSelectedTrack(track);
   };
 
-  const renderModal = () => {
-    if (!selectedTrack) return null;
+  // const renderModal = () => {
+  //   if (!selectedTrack) return null;
 
-    return (
-      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
-        <div
-          className="bg-[#220F33] p-6 rounded-lg max-w-md w-full transform transition-transform duration-300 ease-in-out"
-          style={{
-            transformOrigin: "center",
-            transform: selectedTrack ? "scale(1)" : "scale(0.95)",
-            opacity: selectedTrack ? 1 : 0,
-          }}
-        >
-          <div className="flex items-center space-x-4 mb-4">
-            <div className="relative">
-              <img
-                src={selectedTrack.track.album.images[0].url}
-                alt={selectedTrack.track.name}
-                className="h-16 w-16 rounded-lg transition-transform duration-300 ease-in-out transform hover:scale-105"
-                style={{
-                  boxShadow: `0 0 15px ${selectedTrack.track.album.images[0].url}`,
-                }}
-              />
-              <div
-                className="absolute inset-0 rounded-lg transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100"
-                style={{
-                  background: `linear-gradient(45deg, rgba(0,0,0,0.5), ${selectedTrack.track.album.images[0].url})`,
-                }}
-              ></div>
-            </div>
-            <div>
-              <h2 className="text-xl text-white font-bold animate-pulse">
-                {selectedTrack.track.name}
-              </h2>
-              <p className="text-sm text-purple-300">
-                <strong>Album:</strong> {selectedTrack.track.album.name}
-              </p>
-              <p className="text-sm text-purple-300">
-                <strong>Artists:</strong>{" "}
-                {selectedTrack.track.artists
-                  .map((artist: any, index: any) => (
-                    <a
-                      key={`${artist.name}-${index}`}
-                      href={`https://www.google.com/search?q=${artist.name}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="hover:underline"
-                    >
-                      {artist.name}
-                    </a>
-                  ))
-                  .reduce((prev: any, curr: any) => [prev, ", ", curr])}
-              </p>
-              <p className="text-sm text-purple-300">
-                <strong>Track ID:</strong> {selectedTrack.track.id}
-              </p>
-            </div>
-          </div>
-          <button
-            className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded hover:from-purple-600 hover:to-pink-600 transition-colors duration-200"
-            onClick={() => setSelectedTrack(null)}
-          >
-            Close
-          </button>
-        </div>
-      </div>
-    );
-  };
+  //   return (
+  //     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
+  //       <div
+  //         className="bg-[#220F33] p-6 rounded-lg max-w-md w-full transform transition-transform duration-300 ease-in-out"
+  //         style={{
+  //           transformOrigin: "center",
+  //           transform: selectedTrack ? "scale(1)" : "scale(0.95)",
+  //           opacity: selectedTrack ? 1 : 0,
+  //         }}
+  //       >
+  //         <div className="flex items-center space-x-4 mb-4">
+  //           <div className="relative">
+  //             <img
+  //               src={selectedTrack.track.album.images[0].url}
+  //               alt={selectedTrack.track.name}
+  //               className="h-16 w-16 rounded-lg transition-transform duration-300 ease-in-out transform hover:scale-105"
+  //               style={{
+  //                 boxShadow: `0 0 15px ${selectedTrack.track.album.images[0].url}`,
+  //               }}
+  //             />
+  //             <div
+  //               className="absolute inset-0 rounded-lg transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100"
+  //               style={{
+  //                 background: `linear-gradient(45deg, rgba(0,0,0,0.5), ${selectedTrack.track.album.images[0].url})`,
+  //               }}
+  //             ></div>
+  //           </div>
+  //           <div>
+  //             <h2 className="text-xl text-white font-bold animate-pulse">
+  //               {selectedTrack.track.name}
+  //             </h2>
+  //             <p className="text-sm text-purple-300">
+  //               <strong>Album:</strong> {selectedTrack.track.album.name}
+  //             </p>
+  //             <p className="text-sm text-purple-300">
+  //               <strong>Artists:</strong>{" "}
+  //               {selectedTrack.track.artists
+  //                 .map((artist: any, index: any) => (
+  //                   <a
+  //                     key={`${artist.name}-${index}`}
+  //                     href={`https://www.google.com/search?q=${artist.name}`}
+  //                     target="_blank"
+  //                     rel="noopener noreferrer"
+  //                     className="hover:underline"
+  //                   >
+  //                     {artist.name}
+  //                   </a>
+  //                 ))
+  //                 .reduce((prev: any, curr: any) => [prev, ", ", curr])}
+  //             </p>
+  //             <p className="text-sm text-purple-300">
+  //               <strong>Track ID:</strong> {selectedTrack.track.id}
+  //             </p>
+  //           </div>
+  //         </div>
+  //         <button
+  //           className="mt-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-4 py-2 rounded hover:from-purple-600 hover:to-pink-600 transition-colors duration-200"
+  //           onClick={() => setSelectedTrack(null)}
+  //         >
+  //           Close
+  //         </button>
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   return (
     <>
@@ -181,7 +182,53 @@ const RecentlyPlayedCard = () => {
           }
         `}</style>
       </Card>
-      {renderModal()}
+      {selectedTrack && (
+        <Dialog open={!!selectedTrack} onOpenChange={() => setSelectedTrack(null)}>
+          <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 transition-opacity duration-300 ease-in-out">
+            <div
+              className="bg-[#220F33] p-6 rounded-lg max-w-md w-full transform transition-transform duration-300 ease-in-out"
+              style={{
+                transformOrigin: "center",
+                transform: selectedTrack ? "scale(1)" : "scale(0.95)",
+                opacity: selectedTrack ? 1 : 0,
+              }}
+            >
+              <DialogContent className="sm:max-w-[425px] bg-gradient-to-br from-purple-900 to-black text-white">
+                <div className="space-y-4">
+                  <div className="aspect-video bg-muted rounded-lg overflow-hidden transition-transform duration-300 ease-in-out transform hover:scale-105">
+                    <img
+                      src={selectedTrack.track.album.images[0].url}
+                      alt={selectedTrack.track.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h2 className="text-2xl font-bold">
+                    {selectedTrack.track.name}
+                  </h2>
+                  <strong>Artists:</strong>{" "}
+                  {selectedTrack.track.artists
+                    .map((artist: any, index: any) => (
+                      <a
+                        key={`${artist.name}-${index}`}
+                        href={`https://www.google.com/search?q=${artist.name}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:underline"
+                      >
+                        {artist.name}
+                      </a>
+                    ))
+                    .reduce((prev: any, curr: any) => [prev, ", ", curr])}{" "}
+                  <p className="text-sm ">
+                  <strong>Track ID:</strong>{" "}
+                  {selectedTrack.track.id}
+                  </p>
+                </div>
+              </DialogContent>
+            </div>
+          </div>
+        </Dialog>
+      )}
     </>
   );
 };
