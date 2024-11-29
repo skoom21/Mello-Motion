@@ -24,7 +24,6 @@ const menuItems = [
   { id: "moodMixer", title: "Mood Mixer", icon: "Heart" as const },
   { id: "playlists", title: "My Playlists", icon: "Headphones" as const },
   { id: "discover", title: "Discover", icon: "Radio" as const },
-  { id: "create", title: "Create", icon: "Mic" as const },
 ];
 
 export default function Dashboard() {
@@ -88,8 +87,6 @@ export default function Dashboard() {
         return <Playlists />;
       case "discover":
         return <Discover></Discover>
-      case "create":
-        return <div>Create Content</div>;
       case "profile":
         return <ProfileSection />;
       default:

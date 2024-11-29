@@ -141,8 +141,7 @@ function FloatingImage({ track, mousePosition }: FloatingImageProps) {
       <img
       src={track.imageUrl}
       alt={`${track.name} cover`}
-      loading="lazy"
-      className="w-32 h-32 rounded-md shadow-lg transition-transform duration-300 ease-in-out"
+      className="w-36 h-36  shadow-lg transition-transform duration-300 ease-in-out"
       />
     </div>
   );
