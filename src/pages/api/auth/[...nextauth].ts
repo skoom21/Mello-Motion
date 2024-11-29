@@ -1,5 +1,6 @@
 // pages/api/auth/[...nextauth].ts
-import NextAuth from 'next-auth';
+import { NextApiRequest, NextApiResponse } from 'next';
+import NextAuth, { NextAuthOptions } from 'next-auth';
 import SpotifyProvider from 'next-auth/providers/spotify';
 import axios from 'axios';
 
@@ -46,7 +47,7 @@ async function refreshAccessToken(token: any) {
       ...token,
       accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken,
     };
   } catch (error) {
     console.error('Error refreshing access token:', error);
@@ -57,7 +58,7 @@ async function refreshAccessToken(token: any) {
   }
 }
 
-export default NextAuth({
+const authOptions: NextAuthOptions = {
   providers: [
     SpotifyProvider({
       clientId: process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID || '',
@@ -71,32 +72,27 @@ export default NextAuth({
   ],
   callbacks: {
     async jwt({ token, account }) {
-      // Persist the OAuth access token and Spotify ID
       if (account) {
         token.accessToken = account.access_token;
         token.refreshToken = account.refresh_token;
         token.expires_at = account.expires_at;
 
-        // Fetch the user's profile from Spotify
         try {
           const response = await axios.get('https://api.spotify.com/v1/me', {
             headers: {
               Authorization: `Bearer ${token.accessToken}`,
             },
           });
-          // Store the user ID in the token
-          token.id = response.data.id; // Store the Spotify User ID
+          token.id = response.data.id;
         } catch (error) {
           console.error('Error fetching user data from Spotify:', error);
         }
         return token;
       }
-        // Return previous token if the access token has not expired yet
-        if (typeof token.accessTokenExpires === 'number' && Date.now() < token.accessTokenExpires) {
-          return token;
-        }
-        // Access token has expired, try to update it
-        return refreshAccessToken(token);
+      if (typeof token.accessTokenExpires === 'number' && Date.now() < token.accessTokenExpires) {
+        return token;
+      }
+      return refreshAccessToken(token);
     },
     async session({ session, token }) {
       session.accessToken = token.accessToken as string;
@@ -105,4 +101,8 @@ export default NextAuth({
       return session;
     },
   },
-});
+};
+
+export default async function auth(req: NextApiRequest, res: NextApiResponse) {
+  return await NextAuth(req, res, authOptions);
+}

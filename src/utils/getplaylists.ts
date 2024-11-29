@@ -3,6 +3,7 @@ import { getRecentlyPlayedTracks } from './getrecent';
 import generateRecommendations  from './getrecommendations';
 import { getUserPreferencesFromDB } from './surrealUtils'; // Assuming this utility exists
 import { getUserMoodFromDB } from './surrealUtils'; // Assuming this utility exists
+import { uniqueNamesGenerator, adjectives, colors, animals } from 'unique-names-generator';
 
 const SPOTIFY_API_URL = 'https://api.spotify.com/v1/me/top/artists'; // URL to fetch top artists
 
@@ -72,8 +73,7 @@ export async function getPlaylists(session: any) {
 
     const fetchRecommendations = async (seedArtists: string[], seedTracks: string[], seedGenres: string[], userMood: string) => {
         try {
-            const recommendations = await generateRecommendations(seedArtists, seedTracks, seedGenres, userMood);
-            console.log("Generated Recommendations:", recommendations);
+            const recommendations = await generateRecommendations(seedArtists, seedTracks, seedGenres, userMood, bearerToken);
             return recommendations;
         } catch (error) {
             console.error("Error generating recommendations:", error);
@@ -105,28 +105,55 @@ export async function getPlaylists(session: any) {
 
     // Step 6: Create Playlists based on the mood
     const createPlaylists = (recommendations: any, userMood: string) => {
-        // Example playlist creation based on mood
+        console.log(recommendations);
+        
+        // Function to create a playlist image using the top 4 images
+        const createPlaylistImage = (recommendations: any) => {
+            const images = recommendations.slice(0, 4).map((rec: any) => rec.imageUrl);
+            return images;
+        };
+
+        // Create playlists using generated names
         const playlists = [
             {
-                name: `${userMood} Playlist 1`,
+                name: generatePlaylistName(userMood),
                 tracks: recommendations.slice(0, 10), // First 10 tracks
+                image: createPlaylistImage(recommendations.slice(0, 10))
             },
             {
-                name: `${userMood} Playlist 2`,
+                name: generatePlaylistName(userMood),
                 tracks: recommendations.slice(10, 20), // Next 10 tracks
+                image: createPlaylistImage(recommendations.slice(10, 20))
             },
             {
-                name: `${userMood} Playlist 3`,
+                name: generatePlaylistName(userMood),
                 tracks: recommendations.slice(20, 30), // Next 10 tracks
+                image: createPlaylistImage(recommendations.slice(20, 30))
             },
             {
-                name: `${userMood} Playlist 4`,
+                name: generatePlaylistName(userMood),
                 tracks: recommendations.slice(30, 40), // Last 10 tracks
+                image: createPlaylistImage(recommendations.slice(30, 40))
             }
         ];
         console.log("Playlists:", playlists);
         return playlists;
     };
+    // Step 6.1: Import name generator
+
+    // Step 6.2: Generate creative playlist name
+    const generatePlaylistName = (mood: string) => {
+        const config = {
+            dictionaries: [adjectives, colors, animals],
+            separator: ' ',
+            style: 'capital',
+            length: 2
+        };
+        
+        const baseName = uniqueNamesGenerator(config);
+        return `${mood} ${baseName}`;
+    };
+
 
     // Step 7: Main logic to combine all data and send custom response
     try {

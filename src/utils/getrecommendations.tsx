@@ -15,7 +15,8 @@ const generateRecommendations = async (
     seedArtists: string[],
     seedTracks: string[],
     seedGenres: string[],
-    userMood: string
+    userMood: string,
+    BearerToken: string,
 ) => {
     try {
         if (!Array.isArray(seedArtists) || !Array.isArray(seedTracks) || !Array.isArray(seedGenres)) {
@@ -45,11 +46,12 @@ const generateRecommendations = async (
                         artist: artist,
                         api_key: LAST_FM_API_KEY,
                         format: 'json',
-                        limit: 2, // Adjust this number as needed.
+                        limit: 4, // Adjust this number as needed.
                         autocorrect: 1, // Enable autocorrection for artist/track names.
                     },
                 });
 
+                console.log(`Similar tracks for ${track} by ${artist}:`, response.data);
                 if (response.data && response.data.similartracks && response.data.similartracks.track) {
                     const similarTracks = response.data.similartracks.track;
 
@@ -64,6 +66,29 @@ const generateRecommendations = async (
                 }
             } catch (apiError) {
                 console.error(`Error fetching similar tracks for track: ${track} by artist: ${artist}`, apiError);
+            }
+        }
+        // Add Spotify image URLs to recommendations
+        const SPOTIFY_API_URL = 'https://api.spotify.com/v1/search';
+        for (let rec of recommendations) {
+            try {
+                const spotifyResponse = await axios.get(SPOTIFY_API_URL, {
+                    headers: {
+                        'Authorization': `Bearer ${BearerToken}`
+                    },
+                    params: {
+                        q: `track:${rec.name} artist:${rec.artist.name}`,
+                        type: 'track',
+                        limit: 1
+                    }
+                });
+
+                if (spotifyResponse.data.tracks.items.length > 0) {
+                    rec.imageUrl = spotifyResponse.data.tracks.items[0].album.images[1].url;
+                }
+            } catch (error) {
+                console.error(`Error fetching Spotify image for ${rec.name}:`, error);
+                rec.imageUrl = null;
             }
         }
 

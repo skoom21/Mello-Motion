@@ -16,7 +16,9 @@ import { createUserInDb } from "@/utils/create"; // The function from above
 import MoodLoggerModal from "@/components/Mood-Modal";
 import BlurIn from "@/components/ui/blur-in";
 import SparklesText from "@/components/ui/sparkles-text";
-
+import Discover from "@/components/dashboard/discover";
+import Playlists from "@/components/dashboard/Myplaylists";
+import Loader from "@/components/Loader";
 const menuItems = [
   { id: "Home", title: "Home", icon: "Home" as const },
   { id: "moodMixer", title: "Mood Mixer", icon: "Heart" as const },
@@ -33,6 +35,7 @@ export default function Dashboard() {
   const [showModal, setShowModal] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [customColor, setCustomColor] = useState("#9C27B0");
+  const [showPage, setshowPage] = useState(false);
 
   useEffect(() => {
     const checkSession = async () => {
@@ -58,6 +61,7 @@ export default function Dashboard() {
             // Assuming you have a modal component to show
             setShowModal(true);
           }
+          setshowPage(true);
         }
       }
     };
@@ -71,6 +75,9 @@ export default function Dashboard() {
     );
   }
 
+  
+ 
+
   const renderContent = () => {
     switch (activeItem) {
       case "Home":
@@ -78,9 +85,9 @@ export default function Dashboard() {
       case "moodMixer":
         return <div>Mood Mixer Content</div>;
       case "playlists":
-        return <div>My Playlists Content</div>;
+        return <Playlists />;
       case "discover":
-        return <div>Discover Content</div>;
+        return <Discover></Discover>
       case "create":
         return <div>Create Content</div>;
       case "profile":
@@ -101,6 +108,10 @@ export default function Dashboard() {
   const handleLogout = () => {
     signOut({ callbackUrl: "/" });
   };
+
+  if (!showPage) {
+    return <Loader />;
+  }
 
   return (
     <div
