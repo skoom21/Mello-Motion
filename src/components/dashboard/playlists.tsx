@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import PlaylistDetails from "./PlaylistDetails";
 import AcceptPlaylistModal from "./AcceptPlaylistModal";
 import GenerateButton from "../GenerateButton";
+import { saveRecommendations } from "@/utils/saveRecommendations";
 
 interface Playlist {
   id: string;
@@ -140,6 +141,24 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
     }
     setSelectedPlaylist(null);
     setSavedPlaylist(null);
+
+    // Save the recommendations to the database
+    if (savedPlaylist) {
+      const recommendations = savedPlaylist.tracks.map((track) => ({
+        id: track.id,
+        songId: track.id,
+        songName: track.name,
+        artistName: track.artist.name,
+      }));
+
+      saveRecommendations(session?.user || "default-user-id", recommendations)
+        .then((savedRecs) => {
+          console.log("Recommendations saved:", savedRecs);
+        })
+        .catch((error) => {
+          console.error("Error saving recommendations:", error);
+        });
+    }
   };
 
   return (

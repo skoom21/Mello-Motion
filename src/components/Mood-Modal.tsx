@@ -312,8 +312,8 @@ export default function MoodLoggerModal({
             Welcome!
           </h3>
           <p className="text-gray-400 mb-6">
-            We're excited to have you here! Let's begin by understanding
-            your current mood.
+            Hi {username},
+            {"We're excited to have you here! Let's begin by understanding your current mood."}
           </p>
           </div>
         )}

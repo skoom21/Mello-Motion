@@ -1,8 +1,11 @@
 import axios from 'axios';
 
 const LAST_FM_API_URL = 'https://ws.audioscrobbler.com/2.0/';
-const LAST_FM_API_KEY = process.env.REACT_APP_LAST_FM_API_KEY; // Get Last.fm API key from environment variables
-
+const LAST_FM_API_KEY = process.env.NEXT_APP; // Get Last.fm API key from environment variables
+if (!LAST_FM_API_KEY) {
+    throw new Error("Missing Last.fm API key. Please set the REACT_APP_LAST_FM_API_KEY environment variable.");
+}
+console.log("Last.fm API key:", LAST_FM_API_KEY);
 /**
  * Generates music recommendations using the Last.fm API.
  * @param seedArtists - Array of artist names to use as seeds.
