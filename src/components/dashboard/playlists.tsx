@@ -20,6 +20,7 @@ import { useSession } from "next-auth/react";
 import { Skeleton } from "@/components/ui/skeleton";
 import PlaylistDetails from "./PlaylistDetails";
 import AcceptPlaylistModal from "./AcceptPlaylistModal";
+import GenerateButton from "../GenerateButton";
 
 interface Playlist {
   id: string;
@@ -157,13 +158,9 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
           Personalized playlists based on your mood
         </CardDescription>
         {!selectedPlaylist && (
-          <Button
-            variant="ghost"
-            className="text-purple-300  hover:bg-purple-500/50 hover:shadow-lg hover:shadow-purple-500/50"
-            onClick={fetchPlaylists}
-          >
-            Generate Recommendations
-          </Button>
+            <div className="flex justify-center mt-2">
+            <GenerateButton onClick={fetchPlaylists} loading={loading} text="Generate Playlists" />
+            </div>
         )}
       </CardHeader>
       <CardContent>
