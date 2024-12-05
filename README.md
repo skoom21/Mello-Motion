@@ -105,12 +105,6 @@ yarn dev
 
 ## 📖 Documentation
 
-For detailed documentation, please visit our [Wiki](https://github.com/yourusername/mello-motion/wiki).
-
-- [API Reference](docs/api.md)
-- [Configuration Guide](docs/configuration.md)
-- [Contributing Guidelines](CONTRIBUTING.md)
-
 ## 🔐 Environment Variables
 
 ```env
@@ -138,20 +132,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - Spotify Web API
 - Next.js Team
-- All our contributors and supporters
 
-## 📞 Support
-
-- Report bugs through our [Issue Tracker](https://github.com/yourusername/mello-motion/issues)
-- Join our [Discord Community](https://discord.gg/mello-motion)
-- Email us at support@mello-motion.com
-
----
-
-<div align="center">
-
-Made with ❤️ by the Mello Motion Team
-
-[Website](https://mello-motion.com) • [Documentation](https://docs.mello-motion.com) • [Blog](https://blog.mello-motion.com)
-
-</div>
