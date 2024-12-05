@@ -116,24 +116,28 @@ export async function getPlaylists(session: any) {
         // Create playlists using generated names
         const playlists = [
             {
-                name: generatePlaylistName(userMood),
-                tracks: recommendations.slice(0, 10), // First 10 tracks
-                image: createPlaylistImage(recommendations.slice(0, 10))
+            id: uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', length: 3 }),
+            name: generatePlaylistName(userMood),
+            tracks: recommendations.slice(0, 10), // First 10 tracks
+            image: createPlaylistImage(recommendations.slice(0, 10))
             },
             {
-                name: generatePlaylistName(userMood),
-                tracks: recommendations.slice(10, 20), // Next 10 tracks
-                image: createPlaylistImage(recommendations.slice(10, 20))
+            id: uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', length: 3 }),
+            name: generatePlaylistName(userMood),
+            tracks: recommendations.slice(10, 20), // Next 10 tracks
+            image: createPlaylistImage(recommendations.slice(10, 20))
             },
             {
-                name: generatePlaylistName(userMood),
-                tracks: recommendations.slice(20, 30), // Next 10 tracks
-                image: createPlaylistImage(recommendations.slice(20, 30))
+            id: uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', length: 3 }),
+            name: generatePlaylistName(userMood),
+            tracks: recommendations.slice(20, 30), // Next 10 tracks
+            image: createPlaylistImage(recommendations.slice(20, 30))
             },
             {
-                name: generatePlaylistName(userMood),
-                tracks: recommendations.slice(30, 40), // Last 10 tracks
-                image: createPlaylistImage(recommendations.slice(30, 40))
+            id: uniqueNamesGenerator({ dictionaries: [adjectives, colors, animals], separator: '-', length: 3 }),
+            name: generatePlaylistName(userMood),
+            tracks: recommendations.slice(30, 40), // Last 10 tracks
+            image: createPlaylistImage(recommendations.slice(30, 40))
             }
         ];
         console.log("Playlists:", playlists);
@@ -146,7 +150,7 @@ export async function getPlaylists(session: any) {
         const config = {
             dictionaries: [adjectives, colors, animals],
             separator: ' ',
-            style: 'capital',
+            style: 'capital' as const,
             length: 2
         };
         

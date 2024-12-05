@@ -68,6 +68,7 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
   const [selectedPlaylist, setSelectedPlaylist] = useState<Playlist | null>(
     null
   );
+  const [savedPlaylist, setSavedPlaylist] = useState<Playlist | null>(null);
   const [rejectedPlaylists, setRejectedPlaylists] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -128,16 +129,17 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
     image?: string
   ) => {
     setIsModalOpen(false);
-    if (playlistName && selectedPlaylist) {
+    if (playlistName && savedPlaylist) {
       // Here you would typically save the new playlist to your backend
       console.log("Saving playlist:", {
-        ...selectedPlaylist,
+        ...savedPlaylist,
         name: playlistName,
         description,
         image,
       });
     }
     setSelectedPlaylist(null);
+    setSavedPlaylist(null);
   };
 
   return (
@@ -173,7 +175,25 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
             >
               <ChevronLeft className="mr-2 h-4 w-4" /> Back to playlists
             </Button>
-            <PlaylistDetails playlist={selectedPlaylist} />
+            <PlaylistDetails 
+              playlist={selectedPlaylist}
+              onTracksUpdate={(updatedTracks) => {
+              if (selectedPlaylist) {
+                const updatedPlaylist = {
+                ...selectedPlaylist,
+                tracks: updatedTracks
+                };
+                setSavedPlaylist(updatedPlaylist);
+                
+                // // Update the playlist in the playlists array
+                // const updatedPlaylists = playlists.map(p => 
+                // p.id === selectedPlaylist.id ? updatedPlaylist : p
+                // );
+                // setPlaylists(updatedPlaylists);
+                // localStorage.setItem("playlists", JSON.stringify(updatedPlaylists));
+              }
+              }}
+            />
             <div className="flex justify-end space-x-2">
               <Button
                 variant="destructive"
@@ -182,31 +202,31 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
               >
                 Reject
               </Button>
-              <Button
+                <Button
                 variant="ghost"
                 className="text-purple-300"
                 onClick={handleAcceptClick}
-              >
+                disabled={!savedPlaylist || savedPlaylist.tracks.length === 0}
+                >
                 Accept
-              </Button>
+                </Button>
             </div>
           </div>
         ) : (
           <Carousel opts={{ align: "start", loop: true }} className="w-full">
-            
-            <CarouselContent>
+            <CarouselContent key={`carousel-content-${selectedPlaylist ? selectedPlaylist : 'default'}`}>
               {loading
                 ? Array.from({ length: 4 }).map((_, index) => (
                     <CarouselItem
-                      key={index}
+                      key={`skeleton-${index}`}
                       className="basis-full sm:basis-1/2 lg:basis-1/4"
                     >
                       <div className="p-1">
                         <Card className="bg-[#240f3d] border-purple-700">
                           <CardContent className="flex flex-col items-center p-4">
-                            <Skeleton className="w-full h-40 mb-2 bg-purple-300" />
-                            <Skeleton className="w-3/4 h-6 mb-1 bg-purple-300" />
-                            <Skeleton className="w-1/2 h-4 bg-purple-300" />
+                            <Skeleton key={`skeleton-full-${index}-1`} className="w-full h-40 mb-2 bg-purple-300" />
+                            <Skeleton key={`skeleton-3/4-${index}-2`} className="w-3/4 h-6 mb-1 bg-purple-300" />
+                            <Skeleton key={`skeleton-1/2-${index}-3`} className="w-1/2 h-4 bg-purple-300" />
                           </CardContent>
                         </Card>
                       </div>
@@ -235,7 +255,7 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
                                 .slice(0, 4)
                                 .map((imageUrl, index) => (
                                   <div
-                                    key={index}
+                                    key={`${playlist.id}-image-${index}`}
                                     className="relative w-full h-full"
                                   >
                                     <img

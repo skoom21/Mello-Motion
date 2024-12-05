@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const LAST_FM_API_URL = 'https://ws.audioscrobbler.com/2.0/';
-const LAST_FM_API_KEY = '619beea4c5ab2f5fa3eef2b726f31c04'; // Replace with your Last.fm API key
+const LAST_FM_API_KEY = process.env.REACT_APP_LAST_FM_API_KEY; // Get Last.fm API key from environment variables
 
 /**
  * Generates music recommendations using the Last.fm API.
@@ -60,7 +60,13 @@ const generateRecommendations = async (
                         seedGenres.some((genre) => track.tags?.tag?.some((t: any) => t.name.toLowerCase() === genre.toLowerCase()))
                     );
 
-                    recommendations.push(...(filteredTracks.length > 0 ? filteredTracks : similarTracks));
+                    // Add an id attribute for each track
+                    const tracksWithId = (filteredTracks.length > 0 ? filteredTracks : similarTracks).map((track: any, index: number) => ({
+                        ...track,
+                        id: `${track.name}-${index}`
+                    }));
+
+                    recommendations.push(...tracksWithId);
                 } else {
                     console.warn(`No similar tracks found for track: ${track} by artist: ${artist}`);
                 }

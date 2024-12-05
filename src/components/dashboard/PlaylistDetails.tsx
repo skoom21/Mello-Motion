@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { cn } from "@/lib/utils";
+
 interface Track {
   id: string;
   name: string;
@@ -30,26 +31,42 @@ interface Playlist {
   image: string[];
   tracks: Track[];
 }
-
 interface PlaylistDetailsProps {
   playlist: Playlist;
+  onTracksUpdate: (updatedTracks: Track[]) => void;
 }
 
-const PlaylistDetails: React.FC<PlaylistDetailsProps> = ({ playlist }) => {
-  const [selectedTracks, setSelectedTracks] = useState<string[]>(
-    playlist.tracks.map((track) => track.id)
-  );
-  console.log(playlist.tracks);
-  const handleTrackToggle = (trackId: string) => {
-    setSelectedTracks((prev) =>
-      prev.includes(trackId)
-        ? prev.filter((id) => id !== trackId)
-        : [...prev, trackId]
-    );
-  };
-
+const PlaylistDetails: React.FC<PlaylistDetailsProps> = ({ playlist, onTracksUpdate }) => {
+  const [selectedTracks, setSelectedTracks] = useState<Set<string>>(new Set());
   const [hoveredTrack, setHoveredTrack] = useState<Track | null>(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+  const handleTrackToggle = (trackId: string) => {
+    setSelectedTracks((prevSelected) => {
+      const newSelected = new Set(prevSelected);
+      if (newSelected.has(trackId)) {
+        newSelected.delete(trackId);
+      } else {
+        newSelected.add(trackId);
+      }
+      const updatedTracks = playlist.tracks.filter(track => newSelected.has(track.id));
+      console.log(updatedTracks);
+      onTracksUpdate(updatedTracks);
+      return newSelected;
+    });
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    let newSelected: Set<string>;
+    if (checked) {
+      newSelected = new Set(playlist.tracks.map(track => track.id));
+    } else {
+      newSelected = new Set();
+    }
+    setSelectedTracks(newSelected);
+    const updatedTracks = playlist.tracks.filter(track => newSelected.has(track.id));
+    onTracksUpdate(updatedTracks);
+  };
 
   const handleMouseMove = (event: React.MouseEvent) => {
     setMousePosition({ x: event.clientX, y: event.clientY });
@@ -63,7 +80,7 @@ const PlaylistDetails: React.FC<PlaylistDetailsProps> = ({ playlist }) => {
 
   return (
     <Card
-      className="bg-[#2A1541] border-purple-700 "
+      className="bg-[#2A1541] border-purple-700"
       onMouseMove={handleMouseMove}
     >
       <CardContent className="p-4">
@@ -86,17 +103,28 @@ const PlaylistDetails: React.FC<PlaylistDetailsProps> = ({ playlist }) => {
             <p className="text-sm text-purple-300">{playlist.description}</p>
           </div>
         </div>
+        <div className="flex items-center mb-2">
+          <Checkbox
+            id="select-all"
+            checked={selectedTracks.size === playlist.tracks.length}
+            onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+            className="mr-2"
+          />
+          <label htmlFor="select-all" className="text-purple-200 cursor-pointer">
+            Select All
+          </label>
+        </div>
         <ScrollArea className="h-[400px] pr-4">
           {playlist.tracks.map((track) => (
             <div
               key={track.id}
               onMouseEnter={() => setHoveredTrack(track)}
               onMouseLeave={() => setHoveredTrack(null)}
-              className="flex items-center py-2 border-b border-purple-700 last:border-b-0 "
+              className="flex items-center py-2 border-b border-purple-700 last:border-b-0"
             >
               <Checkbox
                 id={track.id}
-                checked={selectedTracks.includes(track.id)}
+                checked={selectedTracks.has(track.id)}
                 onCheckedChange={() => handleTrackToggle(track.id)}
                 className="mr-2"
               />
@@ -129,22 +157,23 @@ function FloatingImage({ track, mousePosition }: FloatingImageProps) {
   return (
     <div
       className={cn(
-      "fixed pointer-events-none transition-opacity duration-300 ease-in-out transform",
-      track ? "opacity-100 scale-100" : "opacity-0 scale-95"
+        "fixed pointer-events-none transition-opacity duration-300 ease-in-out transform",
+        track ? "opacity-100 scale-100" : "opacity-0 scale-95"
       )}
       style={{
-      left: `${mousePosition.x + 200}px`,
-      top: `${mousePosition.y + 80}px`,
-      transform: "translate(-100%, -100%)",
+        left: `${mousePosition.x + 200}px`,
+        top: `${mousePosition.y + 80}px`,
+        transform: "translate(-100%, -100%)",
       }}
     >
       <img
-      src={track.imageUrl}
-      alt={`${track.name} cover`}
-      className="w-36 h-36  shadow-lg transition-transform duration-300 ease-in-out"
+        src={track.imageUrl}
+        alt={`${track.name} cover`}
+        className="w-36 h-36 shadow-lg transition-transform duration-300 ease-in-out"
       />
     </div>
   );
 }
 
 export default PlaylistDetails;
+

@@ -83,27 +83,37 @@ const AcceptPlaylistModal: React.FC<AcceptPlaylistModalProps> = ({
             </div>
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="image" className="text-right">
-                Image
+              Image
               </Label>
               <div className="col-span-3">
-                <div className="grid grid-cols-2 w-20 aspect-square mb-2 overflow-hidden rounded-md">
-                  {playlist.image.slice(0, 4).map((imageUrl, index) => (
-                    <div key={index} className="relative w-full h-full">
-                      <img
-                        src={imageUrl}
-                        alt={`${playlist.name} cover ${index + 1}`}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  ))}
+              <div className="grid grid-cols-2 w-20 aspect-square mb-2 overflow-hidden rounded-md">
+                {image.length > 0 ? (
+                <div className="relative w-full h-full col-span-2">
+                  <img
+                  src={image[0]}
+                  alt="Playlist cover"
+                  className="w-full h-full object-cover"
+                  />
                 </div>
-                <Input
-                  id="image"
-                  type="file"
-                  onChange={handleImageUpload}
-                  accept="image/*"
-                  className="bg-[#3A1F5A] border-purple-700 text-purple-200"
-                />
+                ) : (
+                playlist.image.slice(0, 4).map((imageUrl, index) => (
+                  <div key={index} className="relative w-full h-full">
+                  <img
+                    src={imageUrl}
+                    alt={`${playlist.name} cover ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                  </div>
+                ))
+                )}
+              </div>
+              <Input
+                id="image"
+                type="file"
+                onChange={handleImageUpload}
+                accept="image/*"
+                className="bg-[#3A1F5A] border-purple-700 text-purple-200"
+              />
               </div>
             </div>
           </div>
