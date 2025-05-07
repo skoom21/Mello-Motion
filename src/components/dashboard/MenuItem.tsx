@@ -1,3 +1,4 @@
+import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Home, Music, Headphones, Radio, Mic, Heart } from "lucide-react";
 

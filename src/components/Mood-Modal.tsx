@@ -1,3 +1,4 @@
+import React from "react";
 import { useState } from "react";
 import { createOrUpdateEmotionalProfile } from "@/utils/emotional_profile";
 import { Button } from "@/components/ui/button";
@@ -266,250 +267,266 @@ export default function MoodLoggerModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[600px] bg-black text-white"></DialogContent>
-      <DialogContent className="sm:max-w-[600px] bg-[#2A1541] text-white">
-      <DialogHeader>
-      {alertComponent}
-        <DialogTitle className="text-center text-xl font-semibold text-purple-300">
-        {step === 2 && "Mood and Energy"}
-        {step === 3 && "Music Goals"}
-        {step === 4 && "Music Style Preferences"}
-        {step === 5 && "Listening Context"}
-        </DialogTitle>
-      </DialogHeader>
-      <AnimatePresence mode="wait">
-        <motion.div
-        key={step}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: -20 }}
-        transition={{ duration: 0.2 }}
-        className="mt-4 space-y-6 flex flex-col items-center"
-        >
-        {step === 1 && (
-          <div className="space-y-6 text-center">
+      <DialogContent
+        className="sm:max-w-[600px] bg-black text-white"
+        aria-describedby="dialog-description"
+      >
+        <p id="dialog-description">This dialog helps you log your mood and preferences.</p>
+      </DialogContent>
+      <DialogContent
+        className="sm:max-w-[600px] bg-[#2A1541] text-white"
+        aria-describedby="dialog-description"
+      >
+        <DialogHeader>
+          {alertComponent}
+          <DialogTitle className="text-center text-xl font-semibold text-purple-300">
+            {step === 2 && "Mood and Energy"}
+            {step === 3 && "Music Goals"}
+            {step === 4 && "Music Style Preferences"}
+            {step === 5 && "Listening Context"}
+          </DialogTitle>
+        </DialogHeader>
+        <AnimatePresence mode="wait">
           <motion.div
-            className="relative mb-6 flex justify-center"
-            whileHover={{ scale: 1.05 }}
-            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+            key={step}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.2 }}
+            className="mt-4 space-y-6 flex flex-col items-center"
           >
-            {/* Ripple Effect behind the Image */}
-            <Ripple
-            className="absolute inset-0"
-            mainCircleSize={10}
-            numCircles={6}
-            />
+            {step === 1 && (
+              <div className="space-y-6 text-center">
+                <motion.div
+                  className="relative mb-6 flex justify-center"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                >
+                  {/* Ripple Effect behind the Image */}
+                  <Ripple
+                    className="absolute inset-0"
+                    mainCircleSize={10}
+                    numCircles={6}
+                  />
 
-            {/* Centered Image */}
-            <Image
-            src="/mello-motion-logo.png"
-            alt="Mello Motion Logo"
-            width={300}
-            height={300}
-            className="bg-transparent relative z-10"
-            />
+                  {/* Centered Image */}
+                  <Image
+                    src="/mello-motion-logo.png"
+                    alt="Mello Motion Logo"
+                    width={300}
+                    height={300}
+                    className="bg-transparent relative z-10"
+                  />
+                </motion.div>
+                <h3 className="text-3xl font-extrabold text-purple-300 mb-4">
+                  Welcome!
+                </h3>
+                <p className="text-gray-400 mb-6">
+                  Hi {username},
+                  {
+                    "We're excited to have you here! Let's begin by understanding your current mood."
+                  }
+                </p>
+              </div>
+            )}
+            {step === 2 && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    How are you feeling right now?
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {moodOptions.map(({ label, emoji }) => (
+                      <Button
+                        key={label}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          currentMood === label && "bg-purple-600 text-white"
+                        )}
+                        onClick={() => setCurrentMood(label)}
+                      >
+                        {emoji} {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    How is your energy level?
+                  </h3>
+                  <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+                    {energyLevels.map(({ label, emoji }) => (
+                      <Button
+                        key={label}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          energyLevel === label && "bg-purple-600 text-white"
+                        )}
+                        onClick={() => setEnergyLevel(label)}
+                      >
+                        {emoji} {label}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    What do you want the music to do for you?
+                  </h3>
+                  <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                    {musicGoals.map((goal) => (
+                      <Button
+                        key={goal}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          selectedGoal === goal && "bg-purple-600 text-white"
+                        )}
+                        onClick={() => setSelectedGoal(goal)}
+                      >
+                        {goal}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    Are you looking for music that...
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {moodAlignment.map((choice) => (
+                      <Button
+                        key={choice}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          moodChoice === choice && "bg-purple-600 text-white"
+                        )}
+                        onClick={() => setMoodChoice(choice)}
+                      >
+                        {choice}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    Pick a few genres you're in the mood for (up to 3)
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {genres.map((genre) => (
+                      <Button
+                        key={genre}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          selectedGenres.includes(genre) &&
+                            "bg-purple-600 text-white"
+                        )}
+                        onClick={() => handleGenreToggle(genre)}
+                      >
+                        {genre}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <h3 className="text-lg text-purple-300">
+                    Do you want upbeat or calm music?
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                    {musicEnergy.map((type) => (
+                      <Button
+                        key={type}
+                        variant="outline"
+                        className={cn(
+                          "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                          musicType === type && "bg-purple-600 text-white"
+                        )}
+                        onClick={() => setMusicType(type)}
+                      >
+                        {type}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="space-y-2">
+                <h3 className="text-lg text-purple-300">
+                  Where are you right now?
+                </h3>
+                <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+                  {locations.map(({ label, emoji }) => (
+                    <Button
+                      key={label}
+                      variant="outline"
+                      className={cn(
+                        "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
+                        location === label && "bg-purple-600 text-white"
+                      )}
+                      onClick={() => setLocation(label)}
+                    >
+                      {emoji} {label}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
           </motion.div>
-          <h3 className="text-3xl font-extrabold text-purple-300 mb-4">
-            Welcome!
-          </h3>
-          <p className="text-gray-400 mb-6">
-            Hi {username},
-            {"We're excited to have you here! Let's begin by understanding your current mood."}
-          </p>
-          </div>
-        )}
-        {step === 2 && (
-          <div className="space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            How are you feeling right now?
-            </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {moodOptions.map(({ label, emoji }) => (
-              <Button
-              key={label}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                currentMood === label && "bg-purple-600 text-white"
-              )}
-              onClick={() => setCurrentMood(label)}
-              >
-              {emoji} {label}
-              </Button>
-            ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            How is your energy level?
-            </h3>
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {energyLevels.map(({ label, emoji }) => (
-              <Button
-              key={label}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                energyLevel === label && "bg-purple-600 text-white"
-              )}
-              onClick={() => setEnergyLevel(label)}
-              >
-              {emoji} {label}
-              </Button>
-            ))}
-            </div>
-          </div>
-          </div>
-        )}
+        </AnimatePresence>
 
-        {step === 3 && (
-          <div className="space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            What do you want the music to do for you?
-            </h3>
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
-            {musicGoals.map((goal) => (
+        <div className="flex justify-between mt-6">
+          {step > 1 && (
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button
-              key={goal}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                selectedGoal === goal && "bg-purple-600 text-white"
-              )}
-              onClick={() => setSelectedGoal(goal)}
+                variant="outline"
+                onClick={handleBack}
+                className="bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white"
               >
-              {goal}
+                Back
               </Button>
-            ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            Are you looking for music that...
-            </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {moodAlignment.map((choice) => (
-              <Button
-              key={choice}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                moodChoice === choice && "bg-purple-600 text-white"
-              )}
-              onClick={() => setMoodChoice(choice)}
-              >
-              {choice}
-              </Button>
-            ))}
-            </div>
-          </div>
-          </div>
-        )}
-
-        {step === 4 && (
-          <div className="space-y-6">
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            Pick a few genres you're in the mood for (up to 3)
-            </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {genres.map((genre) => (
-              <Button
-              key={genre}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                selectedGenres.includes(genre) &&
-                "bg-purple-600 text-white"
-              )}
-              onClick={() => handleGenreToggle(genre)}
-              >
-              {genre}
-              </Button>
-            ))}
-            </div>
-          </div>
-          <div className="space-y-2">
-            <h3 className="text-lg text-purple-300">
-            Do you want upbeat or calm music?
-            </h3>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {musicEnergy.map((type) => (
-              <Button
-              key={type}
-              variant="outline"
-              className={cn(
-                "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-                musicType === type && "bg-purple-600 text-white"
-              )}
-              onClick={() => setMusicType(type)}
-              >
-              {type}
-              </Button>
-            ))}
-            </div>
-          </div>
-          </div>
-        )}
-
-        {step === 5 && (
-          <div className="space-y-2">
-          <h3 className="text-lg text-purple-300">
-            Where are you right now?
-          </h3>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-            {locations.map(({ label, emoji }) => (
-            <Button
-              key={label}
-              variant="outline"
-              className={cn(
-              "bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white",
-              location === label && "bg-purple-600 text-white"
-              )}
-              onClick={() => setLocation(label)}
-            >
-              {emoji} {label}
-            </Button>
-            ))}
-          </div>
-          </div>
-        )}
-        </motion.div>
-      </AnimatePresence>
-
-      <div className="flex justify-between mt-6">
-        {step > 1 && (
-        <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-          <Button
-          variant="outline"
-          onClick={handleBack}
-          className="bg-[#2A1541] text-purple-300 border-purple-600 hover:bg-purple-600 hover:text-white"
+            </motion.div>
+          )}
+          <motion.div
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="ml-auto"
           >
-          Back
-          </Button>
-        </motion.div>
-        )}
-        <motion.div
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        className="ml-auto"
-        >
-        <Button
-          onClick={() => {
-          if ((step === 2 && currentMood && energyLevel) || step === 1) handleNext();
-          else if (step === 3 && selectedGoal && moodChoice) handleNext();
-          else if (step === 4 && selectedGenres.length > 0 && musicType) handleNext();
-          else if (step === 5 && location) handleDone();
-          else handleShowAlert();
-          }}
-          className="bg-purple-600 text-white hover:bg-purple-700"
-        >
-          {step < 4 ? "Next" : "Done"}
-        </Button>
-        </motion.div>
-      </div>
+            <Button
+              onClick={() => {
+                if ((step === 2 && currentMood && energyLevel) || step === 1)
+                  handleNext();
+                else if (step === 3 && selectedGoal && moodChoice) handleNext();
+                else if (
+                  step === 4 &&
+                  selectedGenres.length > 0 &&
+                  musicType
+                )
+                  handleNext();
+                else if (step === 5 && location) handleDone();
+                else handleShowAlert();
+              }}
+              className="bg-purple-600 text-white hover:bg-purple-700"
+            >
+              {step < 4 ? "Next" : "Done"}
+            </Button>
+          </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );
