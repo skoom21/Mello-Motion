@@ -52,6 +52,7 @@ export const SettingsPopover = ({
               <label htmlFor="theme">Theme</label>
               <Switch
                 id="theme"
+                aria-label="Theme"
                 checked={theme === "dark"}
                 onCheckedChange={toggleTheme}
               />

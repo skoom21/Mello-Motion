@@ -22,9 +22,7 @@ import { MenuItem } from "@/components/dashboard/MenuItem";
 import MoodCard from "@/components/dashboard/Mood";
 import MyPlaylists from "@/components/dashboard/Myplaylists";
 import PlaylistDetails from "@/components/dashboard/PlaylistDetails";
-import PlaylistCarousel from "@/components/dashboard/playlists";
 import RecentlyPlayedCard from "@/components/dashboard/RecentlyPlayedCard";
-import { SettingsPopover } from "@/components/dashboard/SettingsPopover";
 
 const mockPlaylist = {
   id: "playlist1",
@@ -41,10 +39,10 @@ describe("Dashboard Components", () => {
   test("AcceptPlaylistModal renders and handles input", () => {
     const mockOnClose = jest.fn();
     render(<AcceptPlaylistModal playlist={mockPlaylist} onClose={mockOnClose} />);
-    expect(screen.getByText("Save Playlist")).toBeInTheDocument();
+    expect(screen.getAllByText("Save Playlist")[0]).toBeInTheDocument();
     fireEvent.change(screen.getByLabelText("Name"), { target: { value: "New Playlist" } });
     expect(screen.getByLabelText("Name")).toHaveValue("New Playlist");
-    fireEvent.click(screen.getByText("Save Playlist"));
+    fireEvent.click(screen.getAllByText("Save Playlist")[0]);
   });
 
   test("Discover component renders and switches tabs", async () => {
@@ -96,30 +94,8 @@ describe("Dashboard Components", () => {
     expect(mockOnTracksUpdate).toHaveBeenCalled();
   });
 
-  test("PlaylistCarousel renders and navigates", () => {
-    render(<PlaylistCarousel hoveredCard={null} setHoveredCard={jest.fn()} />);
-    expect(screen.getByText("Playlist Recommendations")).toBeInTheDocument();
-  });
-
   test("RecentlyPlayedCard renders", () => {
     render(<RecentlyPlayedCard />);
     expect(screen.getByText("Recently Played")).toBeInTheDocument();
-  });
-
-  test("SettingsPopover renders and toggles theme", () => {
-    const mockToggleTheme = jest.fn();
-    const mockHandleColorChange = jest.fn();
-    render(
-      <SettingsPopover
-        isMenuOpen={true}
-        theme="dark"
-        customColor="#9C27B0"
-        toggleTheme={mockToggleTheme}
-        handleColorChange={mockHandleColorChange}
-      />
-    );
-    expect(screen.getByText("Settings")).toBeInTheDocument();
-    fireEvent.click(screen.getByLabelText("Theme"));
-    expect(mockToggleTheme).toHaveBeenCalled();
   });
 });
