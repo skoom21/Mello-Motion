@@ -40,7 +40,6 @@ async function refreshAccessToken(token: any) {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
     });
-
     const refreshedTokens = response.data;
 
     return {

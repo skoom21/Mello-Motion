@@ -22,7 +22,7 @@ import PlaylistDetails from "./PlaylistDetails";
 import AcceptPlaylistModal from "./AcceptPlaylistModal";
 import GenerateButton from "../GenerateButton";
 import { saveRecommendations } from "@/utils/saveRecommendations";
-
+import { savePlaylists } from "@/utils/saveplayslist";
 interface Playlist {
   id: string;
   name: string;
@@ -151,13 +151,15 @@ const PlaylistCarousel: React.FC<PlaylistCarouselProps> = ({
         artistName: track.artist.name,
       }));
 
-      saveRecommendations(session?.user || "default-user-id", recommendations)
+      saveRecommendations(session?.id || "default-user-id", recommendations)
         .then((savedRecs) => {
           console.log("Recommendations saved:", savedRecs);
         })
         .catch((error) => {
           console.error("Error saving recommendations:", error);
         });
+
+        savePlaylists(session?.id || "default-user-id", [savedPlaylist])
     }
   };
 

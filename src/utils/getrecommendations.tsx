@@ -1,7 +1,6 @@
 import axios from 'axios';
-
 const LAST_FM_API_URL = 'https://ws.audioscrobbler.com/2.0/';
-const LAST_FM_API_KEY = process.env.NEXT_APP; // Get Last.fm API key from environment variables
+const LAST_FM_API_KEY = "619beea4c5ab2f5fa3eef2b726f31c04"; // Get Last.fm API key from environment variables
 if (!LAST_FM_API_KEY) {
     throw new Error("Missing Last.fm API key. Please set the REACT_APP_LAST_FM_API_KEY environment variable.");
 }

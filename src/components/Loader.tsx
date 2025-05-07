@@ -16,7 +16,7 @@ const StyledWrapper = styled.div`
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #581c87;
+    background-color: #2e004f;
 
     .spinner {
         background-image: linear-gradient(rgb(186, 66, 255) 35%, rgb(0, 225, 255));

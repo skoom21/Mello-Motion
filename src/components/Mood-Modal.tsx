@@ -266,6 +266,7 @@ export default function MoodLoggerModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
+      <DialogContent className="sm:max-w-[600px] bg-black text-white"></DialogContent>
       <DialogContent className="sm:max-w-[600px] bg-[#2A1541] text-white">
       <DialogHeader>
       {alertComponent}
