@@ -43,6 +43,15 @@ const config: Config = {
   //   "clover"
   // ],
 
+  reporters: [
+    "default",
+    ["jest-html-reporters", {
+      "publicPath": "./html-report",
+      "filename": "report.html",
+      "expand": true
+    }]
+  ],
+
   // An object that configures minimum threshold enforcement for coverage results
   // coverageThreshold: undefined,
 
