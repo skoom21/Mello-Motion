@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Slider } from '@/components/ui/slider';
-import EmotionalSphere from './EmotionSphere'; // Import your WebGL sphere component
+// import EmotionalSphere from './EmotionSphere'; // Import your WebGL sphere component
 import {
   Dialog,
   DialogContent,

@@ -1,0 +1,259 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{hyperref}
+\usepackage{sectsty}
+\usepackage{xcolor}
+
+% Define colors
+\definecolor{primary}{HTML}{8A2BE2} % Purple
+\definecolor{secondary}{HTML}{4B0082} % Indigo
+\definecolor{accent}{HTML}{00FFFF} % Aqua
+\definecolor{textcolor}{HTML}{333333}
+\definecolor{lightgray}{HTML}{F5F5F5}
+
+% Set geometry
+\geometry{a4paper, margin=1in}
+
+% Set fonts (example, choose fonts available on your system)
+% \usepackage{lmodern} % Latin Modern
+% \usepackage[T1]{fontenc}
+
+% Fancy headers and footers
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{primary}{\textbf{Mello-Motion Test Documentation}}}
+\fancyhead[R]{\textcolor{secondary}{\today}}
+\fancyfoot[C]{\textcolor{textcolor}{\thepage}}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+\renewcommand{\headrule}{\color{primary}\hrulefill}
+\renewcommand{\footrule}{\color{secondary}\hrulefill}
+
+% Section styling
+\sectionfont{\color{primary}\Large\bfseries}
+\subsectionfont{\color{secondary}\large\bfseries}
+\subsubsectionfont{\color{accent}\normalsize\bfseries}
+
+% Hyperlink setup
+\hypersetup{
+    colorlinks=true,
+    linkcolor=secondary,
+    filecolor=accent,      
+    urlcolor=primary,
+    pdftitle={Mello-Motion Test Documentation},
+    pdfpagemode=FullScreen,
+}
+
+\title{\textcolor{primary}{\textbf{Mello-Motion Application Test Documentation}}}
+\author{\textcolor{secondary}{Mello-Motion Development Team}}
+\date{\textcolor{secondary}{\today}}
+
+\begin{document}
+
+\maketitle
+\thispagestyle{empty} % No header/footer on title page
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+This document outlines the test cases, risk management strategies, and the Risk Mitigation and Monitoring (RMM) table for the Mello-Motion application. The tests are divided into two main categories: API tests and Application (UI) tests.
+
+\section{Test Suites}
+
+\subsection{API Test Suite}
+The API test suite focuses on validating the functionality of the backend utility functions that interact with external APIs (e.g., Spotify) and the SurrealDB database.
+
+\subsubsection{Tested API Utilities}
+\begin{itemize}
+    \item \texttt{getPlaylists}: Fetches and processes data to create user-specific playlists.
+    \item \texttt{savePlaylists}: Saves or updates playlists in the SurrealDB.
+    \item \texttt{saveRecommendations}: Saves recommended tracks to the SurrealDB.
+    \item \texttt{getUserPreferencesFromDB}: Retrieves user preferences from the database.
+    \item \texttt{getUserMoodFromDB}: Retrieves user mood data from the database.
+    \item \texttt{createOrUpdateEmotionalProfile}: Manages user emotional profiles in the database.
+    \item \texttt{createUserInDb}: Creates or updates user information in the database.
+\end{itemize}
+
+\subsection{Application (UI) Test Suite}
+The Application test suite focuses on validating the functionality and rendering of various React components within the Mello-Motion user interface.
+
+\subsubsection{Tested UI Components}
+\begin{itemize}
+    \item \texttt{AcceptPlaylistModal}: Modal for saving a new playlist.
+    \item \texttt{Discover}: Component for discovering new music, artists, etc.
+    \item \texttt{MentalWellnessCard}: Card displaying mental wellness data.
+    \item \texttt{MenuItem}: Navigation menu item.
+    \item \texttt{MoodCard}: Card displaying mood data.
+    \item \texttt{MyPlaylists}: Component for managing user playlists.
+    \item \texttt{PlaylistDetails}: Component showing details of a specific playlist.
+    \item \texttt{RecentlyPlayedCard}: Card displaying recently played tracks.
+\end{itemize}
+
+\section{Test Cases}
+
+\subsection{API Test Cases}
+
+\subsubsection{\texttt{getPlaylists}}
+\begin{itemize}
+    \item \textbf{TC-API-001}: Verify successful fetching and processing of data to create playlists.
+    \item \textbf{TC-API-002}: Verify error handling when fetching recently played tracks fails.
+    \item \textbf{TC-API-003}: Verify error handling when fetching user preferences fails.
+    \item \textbf{TC-API-004}: Verify error handling when fetching user mood fails.
+    \item \textbf{TC-API-005}: Verify error handling when generating recommendations fails.
+\end{itemize}
+
+\subsubsection{\texttt{savePlaylists}}
+\begin{itemize}
+    \item \textbf{TC-API-006}: Verify creation of new playlists if they do not exist in the database.
+    \item \textbf{TC-API-007}: Verify updating of existing playlists in the database.
+    \item \textbf{TC-API-008}: Verify database initialization if no existing connection is found.
+    \item \textbf{TC-API-009}: Verify error handling if database connection fails and initialization also fails.
+    \item \textbf{TC-API-010}: Verify error handling if database create operation fails.
+    \item \textbf{TC-API-011}: Verify error handling if database update operation fails.
+    \item \textbf{TC-API-012}: Verify "Unknown Artist" is used if artist information is missing for a track.
+\end{itemize}
+
+\subsubsection{\texttt{saveRecommendations}}
+\begin{itemize}
+    \item \textbf{TC-API-013}: Verify error handling if database connection fails and initialization also fails.
+    \item \textbf{TC-API-014}: Verify error handling if database create operation fails.
+\end{itemize}
+
+\subsubsection{\texttt{createOrUpdateEmotionalProfile}}
+\begin{itemize}
+    \item \textbf{TC-API-015}: Verify creation of a new emotional profile if one does not exist.
+    \item \textbf{TC-API-016}: Verify updating of an existing emotional profile.
+    \item \textbf{TC-API-017}: Verify error handling if DB connection fails and initDb also fails.
+    \item \textbf{TC-API-018}: Verify error handling if db.create fails.
+    \item \textbf{TC-API-019}: Verify error handling if db.update fails.
+\end{itemize}
+
+\subsubsection{\texttt{createUserInDb}}
+\begin{itemize}
+    \item \textbf{TC-API-020}: Verify creation of a new user if one does not exist.
+    \item \textbf{TC-API-021}: Verify updating of an existing user.
+    \item \textbf{TC-API-022}: Verify use of fallback values for username and email if not provided.
+    \item \textbf{TC-API-023}: Verify error handling if DB connection fails and initDb also fails.
+    \item \textbf{TC-API-024}: Verify error handling if db.create fails.
+    \item \textbf{TC-API-025}: Verify error handling if db.update fails.
+\end{itemize}
+
+\subsection{Application (UI) Test Cases}
+
+\subsubsection{\texttt{AcceptPlaylistModal}}
+\begin{itemize}
+    \item \textbf{TC-UI-001}: Verify modal renders correctly and handles input for playlist name.
+    \item \textbf{TC-UI-002}: Verify save functionality.
+\end{itemize}
+
+\subsubsection{\texttt{Discover}}
+\begin{itemize}
+    \item \textbf{TC-UI-003}: Verify component renders and allows switching between tabs (e.g., Tracks, Artists).
+\end{itemize}
+
+\subsubsection{\texttt{MentalWellnessCard}}
+\begin{itemize}
+    \item \textbf{TC-UI-004}: Verify card renders correctly with provided mental health data.
+\end{itemize}
+
+\subsubsection{\texttt{MenuItem}}
+\begin{itemize}
+    \item \textbf{TC-UI-005}: Verify menu item renders and handles click events.
+\end{itemize}
+
+\subsubsection{\texttt{MoodCard}}
+\begin{itemize}
+    \item \textbf{TC-UI-006}: Verify card renders correctly with provided mood data.
+\end{itemize}
+
+\subsubsection{\texttt{MyPlaylists}}
+\begin{itemize}
+    \item \textbf{TC-UI-007}: Verify component renders and allows playlist creation.
+\end{itemize}
+
+\subsubsection{\texttt{PlaylistDetails}}
+\begin{itemize}
+    \item \textbf{TC-UI-008}: Verify component renders playlist details and allows track selection/deselection.
+\end{itemize}
+
+\subsubsection{\texttt{RecentlyPlayedCard}}
+\begin{itemize}
+    \item \textbf{TC-UI-009}: Verify card renders correctly.
+\end{itemize}
+
+\section{Risk Management}
+
+\subsection{Identified Risks}
+\begin{enumerate}[label=\textbf{R\arabic*.}, itemsep=5pt]
+    \item \textbf{External API Unavailability/Changes:} The application relies on external APIs (e.g., Spotify). Downtime or breaking changes in these APIs can disrupt core functionalities like music recommendation and playback.
+    \item \textbf{Database Errors/Failures:} Issues with the SurrealDB (connection, read/write errors, data corruption) can lead to inability to save user data, playlists, or retrieve emotional profiles.
+    \item \textbf{Authentication Failures:} Problems with NextAuth or Spotify authentication can prevent users from accessing the application.
+    \item \textbf{Incorrect Data Processing:} Bugs in data processing logic (e.g., playlist generation, mood analysis) can lead to poor user experience or inaccurate recommendations.
+    \item \textbf{UI Rendering Issues:} Inconsistencies or errors in component rendering across different browsers or devices.
+    \item \textbf{Performance Bottlenecks:} Slow API responses or inefficient client-side processing leading to a sluggish UI.
+    \item \textbf{Security Vulnerabilities:} Potential for XSS, CSRF, or insecure handling of sensitive data like access tokens.
+    \item \textbf{State Management Complexity:} Issues arising from managing complex application state, especially with asynchronous operations.
+\end{enumerate}
+
+\subsection{Mitigation Strategies}
+\begin{enumerate}[label=\textbf{M\arabic*.}, itemsep=5pt]
+    \item \textbf{Robust Error Handling and Retries:} Implement comprehensive error handling for API calls, including retry mechanisms for transient errors. Provide informative feedback to the user.
+    \item \textbf{Database Monitoring and Backup:} Regularly monitor database health and implement backup and recovery strategies. Use transactions where appropriate to ensure data integrity.
+    \item \textbf{Thorough Authentication Testing:} Test authentication flows rigorously, including edge cases and error conditions. Keep authentication libraries updated.
+    \item \textbf{Unit and Integration Testing:} Extensive unit tests for individual functions and integration tests for workflows to catch data processing bugs early. Code reviews to ensure logic correctness.
+    \item \textbf{Cross-Browser and Responsive Testing:} Test UI components on major browsers and various screen sizes. Utilize UI testing frameworks.
+    \item \textbf{Performance Profiling and Optimization:} Profile application performance to identify bottlenecks. Optimize API calls, client-side rendering, and state updates. Consider techniques like lazy loading and code splitting.
+    \item \textbf{Security Best Practices and Audits:} Follow security best practices (e.g., OWASP guidelines). Sanitize inputs, validate outputs, use HTTPS, and consider regular security audits.
+    \item \textbf{Clear State Management Patterns:} Employ clear and predictable state management patterns (e.g., using React Query, Zustand, or Redux consistently).
+\end{enumerate}
+
+\section{RMM (Risk Mitigation and Monitoring) Table}
+\begin{longtable}{|p{0.5cm}|p{4cm}|p{5cm}|p{5cm}|}
+    \hline
+    \rowcolor{lightgray}
+    \textbf{ID} & \textbf{Risk Description} & \textbf{Mitigation Strategy} & \textbf{Monitoring Plan} \\
+    \hline
+    \endfirsthead
+    
+    \hline
+    \rowcolor{lightgray}
+    \textbf{ID} & \textbf{Risk Description} & \textbf{Mitigation Strategy} & \textbf{Monitoring Plan} \\
+    \hline
+    \endhead
+    
+    \hline \multicolumn{4}{|r|}{{Continued on next page}} \\ \hline
+    \endfoot
+    
+    \hline
+    \endlastfoot
+
+    R1 & External API Unavailability/Changes & M1: Robust Error Handling and Retries. Fallback mechanisms or cached data where possible. & API health checks, logging of API errors, alerts for high error rates or breaking changes (via API provider notifications). \\
+    \hline
+    R2 & Database Errors/Failures & M2: Database Monitoring and Backup. Connection pooling and retry logic for DB operations. & Database performance monitoring, automated backups, alerts for DB errors or high latency. Regular data integrity checks. \\
+    \hline
+    R3 & Authentication Failures & M3: Thorough Authentication Testing. Secure token handling. & Monitoring of authentication success/failure rates. Logging of authentication errors. User reports. \\
+    \hline
+    R4 & Incorrect Data Processing & M4: Unit and Integration Testing. Code reviews. Validation of inputs and outputs. & Continuous integration with automated tests. Monitoring of key data processing pipelines for anomalies. User feedback analysis. \\
+    \hline
+    R5 & UI Rendering Issues & M5: Cross-Browser and Responsive Testing. Use of established UI libraries and testing tools. & Automated UI tests (e.g., Playwright, Cypress). Manual testing on target devices/browsers. User-reported bug tracking. \\
+    \hline
+    R6 & Performance Bottlenecks & M6: Performance Profiling and Optimization. Efficient data fetching and rendering strategies. & Application Performance Monitoring (APM) tools. Regular performance testing under load. Monitoring of page load times and API response times. \\
+    \hline
+    R7 & Security Vulnerabilities & M7: Security Best Practices and Audits. Input sanitization, secure coding practices. Dependency vulnerability scanning. & Regular security scans (static and dynamic analysis). Penetration testing (if applicable). Monitoring for suspicious activities or access patterns. \\
+    \hline
+    R8 & State Management Complexity & M8: Clear State Management Patterns. Modular component design. Developer training on state management best practices. & Code reviews focusing on state logic. Monitoring for unexpected UI behavior or state inconsistencies. Debugging tools for state inspection. \\
+    \hline
+\end{longtable}
+
+\end{document}

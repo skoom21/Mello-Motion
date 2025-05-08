@@ -1,5 +1,5 @@
 "use client";
-
+import React from "react";
 import { useState, useEffect, SetStateAction } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
